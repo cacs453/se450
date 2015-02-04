@@ -1,0 +1,24 @@
+package se450.elevator.common;
+
+public class Common {
+	
+	private long StartTimeMillis;
+	
+	/**
+	 * Boolean flag for current running mode.
+	 * true - Running on debug mode.
+	 * false - Running on normal mode. Common.print("debug", String message) won't print anything at this mode.
+	 */
+	public static boolean DEBUG = false;
+	
+	//public 
+	
+	public static void print(String mode, String message) {
+		if (mode.equalsIgnoreCase("error"))
+			System.err.print(message);
+		System.currentTimeMillis()
+	}
+	
+	
+	
+}

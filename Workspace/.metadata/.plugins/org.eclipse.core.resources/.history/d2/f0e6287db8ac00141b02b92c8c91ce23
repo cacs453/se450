@@ -1,0 +1,43 @@
+package se450.elevator.common;
+
+public class Toolset {
+	
+	private volatile static Toolset instance;
+	private static long StartTimeMillis;
+	
+	/**
+	 * Boolean flag for current running mode.
+	 * true - Running on debug mode.
+	 * false - Running on normal mode. Common.print("debug", String message) won't print anything at this mode.
+	 */
+	public static boolean DEBUG = false;
+	
+	private Toolset() {
+		StartTimeMillis = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Toolset is a Singleton class. This method will return the instance of Toolset.
+	 * It is a multi-thread safe implementation.
+	 */
+	public static Toolset getInstance() {
+		if (instance == null)
+		{
+			synchronized (Toolset.class)
+			{
+				if (instance == null) // Double-Check!
+					instance = new Toolset();
+			}
+		}
+		return instance;
+	}
+	
+	public static void print(String mode, String message) {
+		if (mode.equalsIgnoreCase("error"))
+			System.err.print(message);
+		System.currentTimeMillis()
+	}
+	
+	
+	
+}
