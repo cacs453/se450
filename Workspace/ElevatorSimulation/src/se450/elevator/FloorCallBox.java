@@ -4,16 +4,12 @@
  */
 package se450.elevator;
 
-enum CALLBOX_INPUT  {
-	NONE, 
-	UP, 
-	DOWN 
-};
+
 
 public class FloorCallBox {
 	private Floor parentFloor; 
-	private CALLBOX_INPUT status;
-	private void pressButton(Person person, CALLBOX_INPUT input) {
+	private DIRECTION status;
+	private void pressButton(Person person, DIRECTION input) {
 		
 	}
 	

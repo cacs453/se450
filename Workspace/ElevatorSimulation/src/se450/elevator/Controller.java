@@ -1,5 +1,5 @@
 package se450.elevator;
 
-public class Controller {
+public class Controller extends Thread {
 
 }

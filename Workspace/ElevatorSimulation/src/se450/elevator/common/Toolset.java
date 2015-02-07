@@ -46,7 +46,7 @@ public class Toolset {
 	 */
 	public static String getDeltaTimeString() {
 		long millis = getDeltaTimeLong();
-		return String.format("%02d:%02d:%02d.%3d", 
+		return String.format("%02d:%02d:%02d.%03d", 
 				TimeUnit.MILLISECONDS.toHours(millis),
 				TimeUnit.MILLISECONDS.toMinutes(millis) - 
 				TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
