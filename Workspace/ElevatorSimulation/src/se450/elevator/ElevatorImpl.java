@@ -304,4 +304,9 @@ public class ElevatorImpl extends Thread implements Elevator {
 	public void halt() {
 		this.halt = true;
 	}
+	
+	public int getElevatorID()
+	{
+		return elevatorID;
+	}
 }

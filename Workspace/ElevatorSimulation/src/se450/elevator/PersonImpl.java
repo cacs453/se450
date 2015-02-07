@@ -8,16 +8,27 @@ public class PersonImpl implements Person {
 	private int id;
 	private int fromFloor;
 	private int toFloor;
+	private long triggerTime; 
 	PERSON_STATUS status; 
 	private long waitStartTime; 
 	private long waitEndTime;
 	private long rideEndTime;	
-	
-	public PersonImpl(int id, int fromFloor, int toFloor) {
+			
+	public PersonImpl(int id, int fromFloor, int toFloor, long triggerTime) {
 		this.id = id;
 		this.fromFloor = fromFloor;
-		this.toFloor = toFloor;		
+		this.toFloor = toFloor;
+		this.triggerTime = triggerTime;
 		this.status = PERSON_STATUS.NONE;		
+	}
+	
+	
+	/**
+	 * For dummy data
+	 * @return
+	 */
+	public int getPersonId() {
+		return id;
 	}
 	
 	public int getFromFloor() {
@@ -26,6 +37,14 @@ public class PersonImpl implements Person {
 	
 	public int getToFloor() {
 		return toFloor;
+	}
+	
+	/**
+	 * For dummy data
+	 * @return
+	 */
+	public long getTriggerTime() {
+		return triggerTime;
 	}
 	
 	public PERSON_STATUS getStatus() {

@@ -11,7 +11,7 @@ public class PersonFactory {
 	}
 	
 	public Person CreatePerson(int id, int fromFloor, int toFloor, int personType) {
-		Person person = new PersonImpl(id, fromFloor, toFloor);
+		Person person = new PersonImpl(id, fromFloor, toFloor, 0);
 		return person;
 	}
 	
