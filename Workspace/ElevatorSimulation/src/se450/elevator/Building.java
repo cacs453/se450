@@ -6,7 +6,7 @@ import se450.elevator.common.ConfigHelper;
 
 /**
  * The building contains all of the elevators, persons, etc.
- *
+ * @author Rong Zhuang
  */
 public class Building {
 	

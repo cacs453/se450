@@ -8,7 +8,7 @@ import se450.elevator.common.Toolset;
 
 /**
  * The simulator of the elevator system. This system reads the configuration from xml and runs as configured.
- * 
+ * @author Rong Zhuang
  */
 public class ElevatorSystem {
 	

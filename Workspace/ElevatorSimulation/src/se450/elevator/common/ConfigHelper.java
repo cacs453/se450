@@ -16,7 +16,7 @@ import se450.elevator.PersonImpl;
 
 /**
  * A helper class to get the configurations from xml file.
- *
+ * @author Rong Zhuang
  */
 public class ConfigHelper {
 

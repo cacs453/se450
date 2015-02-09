@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * PanelRequest is a data instance which is used to store the requests info.
  * These requests are simulating, someone push the floor button inside the elevator
- *
+ * @author Rong Zhuang
  */
 public class PanelRequest {
 
