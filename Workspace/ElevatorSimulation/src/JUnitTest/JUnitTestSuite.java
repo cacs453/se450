@@ -5,6 +5,12 @@ import junit.framework.Test;
 import junit.textui.TestRunner; 
 import se450.elevator.ElevatorFactory;
 
+/**
+ * JUNIT test suite.
+ * 
+ * @author Cheng Zhang
+ *
+ */
 public class JUnitTestSuite extends TestSuite {
 	public static Test suite() { 
         TestSuite suite = new TestSuite("TestSuite Test"); 

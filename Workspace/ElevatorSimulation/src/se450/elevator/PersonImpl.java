@@ -7,6 +7,9 @@ import se450.elevator.common.PERSON_STATUS;
 
 /**
  * Person implementation.
+ * 
+ * @author Cheng Zhang
+ *
  */
 public class PersonImpl implements Person {
 	private int id;

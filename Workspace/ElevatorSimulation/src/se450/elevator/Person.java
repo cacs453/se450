@@ -1,14 +1,13 @@
 /**
- * @ Cheng Zhang
- * @ 
+ * Person class.
+ * 
+ * @author Cheng Zhang
+ *
  */
 package se450.elevator;
 
 import se450.elevator.common.PERSON_STATUS;
 
-/**
- * Person interface.
- */
 public interface Person {
 	/**
 	 * Get person id.
