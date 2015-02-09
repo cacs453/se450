@@ -3,6 +3,7 @@ package se450.elevator;
 import java.util.ArrayList;
 
 import se450.elevator.common.ConfigHelper;
+import se450.elevator.common.Toolset;
 
 /**
  * The building contains all of the elevators, persons, etc.
@@ -74,10 +75,12 @@ public class Building {
 	 * 
 	 */
     public void initilize() {
+    	Toolset.println("info", "Create Building...");
     	floorNumbers = ConfigHelper.getFloorNumbers();
     	elevatorNumbers = ConfigHelper.getElevatorNumbers();
     	elevatorList = ConfigHelper.getElevatorList();
     	personList = ConfigHelper.getPersonList();
     	panelRequestList = ConfigHelper.getPanelRequestList();
+    	Toolset.println("info", "Building created - "+floorNumbers+" floors, "+elevatorNumbers+" elevators");
     }
 }

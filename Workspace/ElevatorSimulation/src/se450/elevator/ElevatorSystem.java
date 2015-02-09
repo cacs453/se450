@@ -17,11 +17,12 @@ public class ElevatorSystem {
 		try {			
 			
 			//initial the building
-	        Building building = Building.getBuilding();
-	        building.initilize();
-        
 			Toolset.init();
 			Toolset.DEBUG = false;
+			
+			//initial the building
+	        Building building = Building.getBuilding();
+	        building.initilize();
 			
 			//create a hash map for elevator
 			HashMap<String, ElevatorImpl> mapElevator = new HashMap<String, ElevatorImpl>();

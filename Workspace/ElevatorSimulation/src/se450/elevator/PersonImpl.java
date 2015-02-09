@@ -3,6 +3,7 @@
  * @ 
  */
 package se450.elevator;
+import se450.elevator.common.PERSON_STATUS;
 
 /**
  * Person implementation.

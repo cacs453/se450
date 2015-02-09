@@ -4,12 +4,7 @@
  */
 package se450.elevator;
 
-enum PERSON_STATUS 
-{	NONE, 
-	WAITING, 
-	RIDDING, 
-	ARRIVED
-};
+import se450.elevator.common.PERSON_STATUS;
 
 /**
  * Person interface.
