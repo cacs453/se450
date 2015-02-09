@@ -3,6 +3,7 @@ package se450.elevator.common;
 import java.util.ArrayList;
 
 import se450.elevator.ElevatorFactory;
+import se450.elevator.ElevatorImpl;
 import se450.elevator.PanelRequest;
 import se450.elevator.Elevator;
 import se450.elevator.Person;
@@ -11,7 +12,6 @@ import javax.xml.parsers.*;
 
 import org.w3c.dom.*; 
 
-import se450.elevator.ElevatorImpl;
 import se450.elevator.PersonImpl;
 
 /**

@@ -1,5 +1,7 @@
 package se450.elevator;
 
+import se450.elevator.common.DIRECTION;
+
 /**
  * This interface is the abstraction for all Elevators
  * 

@@ -12,7 +12,6 @@ import org.junit.Test;
 import se450.elevator.PersonFactory;
 import se450.elevator.Person;
 import se450.elevator.ElevatorFactory;
-import se450.elevator.ElevatorImpl;
 
 public class PersonFactoryTest extends TestCase {
 
@@ -36,6 +35,7 @@ public class PersonFactoryTest extends TestCase {
 	public void testPersonFactory() {
 		Person person = PersonFactory.CreatePerson(1, 12, 5000);
 		assertNotNull(person);
+		assertEquals(true, (person instanceof Person)); 
 	}
 
 }

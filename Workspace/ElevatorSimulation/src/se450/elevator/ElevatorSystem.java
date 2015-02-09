@@ -3,6 +3,7 @@ package se450.elevator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import se450.elevator.common.DIRECTION;
 import se450.elevator.common.Toolset;
 
 /**

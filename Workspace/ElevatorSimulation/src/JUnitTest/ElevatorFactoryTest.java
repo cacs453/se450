@@ -33,7 +33,7 @@ public class ElevatorFactoryTest extends TestCase {
 	@Test
 	public void testCreateElevator() {
 		ElevatorImpl e1 = ElevatorFactory.createElevator(10, 16, 500, 500, 1, 15000);
-		assertNotNull(e1);
-		assertEquals(1,e1.getElevatorID(),0); 
+		assertNotNull(e1);		
+		assertEquals(true, (e1 instanceof ElevatorImpl)); 
 	}
 }

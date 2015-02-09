@@ -2,6 +2,7 @@ package se450.elevator;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+
 import se450.elevator.common.*;
 
 /**
@@ -190,7 +191,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * This method will walk through the request list and return a string for print purpose
 	 * @return - The current request list with format [Floor Requests: ...] [Rider Requests: ...]
 	 */
-	protected String requestList_toString() {
+	public String requestList_toString() {
 		String fr = "", rr = "";
 		for (int i=0; i<requestList.size(); i++) {
 			Request r = requestList.get(i);
@@ -210,7 +211,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * @param request - The request to be calculated.
 	 * @return - The number of floors elevator need to go to answer the request.
 	 */
-	protected int distance(Request request) {
+	public int distance(Request request) {
 		if (request.type==REQUEST_TYPE.RIDER) { //Rider request. Means the request must have the SAME DIRECTION with current moving direction.
 			return Math.abs(request.floor - this.currentFloor); 
 		}
@@ -255,7 +256,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * @param r2 - Request 2.
 	 * @return - True if request 1 is nearer, False if request 1 is farer.
 	 */
-	protected boolean isNearer (Request r1, Request r2) {
+	public boolean isNearer (Request r1, Request r2) {
 		int d1 = distance(r1);
 		int d2 = distance(r2);
 		return (d1<=d2) ? true : false;

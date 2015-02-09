@@ -1,5 +1,6 @@
 package se450.elevator;
 
+
 /**
  * This is the Elevator Factory class. Use this class to create Elevator instances.
  * 

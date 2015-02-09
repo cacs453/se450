@@ -4,8 +4,6 @@ import junit.framework.TestSuite;
 import junit.framework.Test; 
 import junit.textui.TestRunner; 
 import se450.elevator.ElevatorFactory;
-import se450.elevator.ElevatorImpl;
-import se450.elevator.ElevatorImplTest;
 
 public class JUnitTestSuite extends TestSuite {
 	public static Test suite() { 
