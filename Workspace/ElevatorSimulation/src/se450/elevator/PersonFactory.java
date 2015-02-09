@@ -9,7 +9,7 @@ package se450.elevator;
  */
 public class PersonFactory {
 	private final static int DEFAULT_PERSON_TYPE = 0;
-	private int personID = 0;
+	private static int personID = 0;
 	
 	public PersonFactory() {
 	}	
@@ -21,7 +21,7 @@ public class PersonFactory {
 	 * @param triggerTime - The preset time when the person will trigger the elevator button.
 	 * @return Person instance.
 	 */
-	public Person CreatePerson(int fromFloor, int toFloor, long triggerTime) {
+	public static Person CreatePerson(int fromFloor, int toFloor, long triggerTime) {
 		Person person = new PersonImpl(personID, fromFloor, toFloor, triggerTime);
 		personID++;
 		return person;		
