@@ -1,6 +1,8 @@
 /**
- * @ Cheng Zhang
- * @ 
+ * Person class.
+ * 
+ * @author Cheng Zhang
+ *
  */
 package se450.elevator;
 
@@ -11,9 +13,6 @@ enum PERSON_STATUS
 	ARRIVED
 };
 
-/**
- * Person interface.
- */
 public interface Person {
 	/**
 	 * Get person id.

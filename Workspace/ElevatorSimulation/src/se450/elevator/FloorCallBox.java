@@ -2,8 +2,11 @@ package se450.elevator;
 
 import se450.elevator.common.DIRECTION;
 
+
 /**
  * Hasn't implemented for Phase II
+ * 
+ * @author Cheng Zhang
  *
  */
 public class FloorCallBox {

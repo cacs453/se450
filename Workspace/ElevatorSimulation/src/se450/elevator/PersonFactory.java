@@ -1,11 +1,10 @@
-/**
- * @ Cheng Zhang
- * @ 
- */
 package se450.elevator;
 
 /**
  * Person factory.
+ * 
+ * @author Cheng Zhang
+ *
  */
 public class PersonFactory {
 	private final static int DEFAULT_PERSON_TYPE = 0;

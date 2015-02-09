@@ -9,6 +9,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * JUNIT test.
+ * 
+ * @author Cheng Zhang
+ *
+ */
 public class FloorCallBoxTest extends TestCase {
 
 	@BeforeClass

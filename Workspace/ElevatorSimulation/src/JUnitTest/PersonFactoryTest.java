@@ -13,6 +13,12 @@ import se450.elevator.PersonFactory;
 import se450.elevator.Person;
 import se450.elevator.ElevatorFactory;
 
+/**
+ * JUNIT test.
+ * 
+ * @author Cheng Zhang
+ *
+ */
 public class PersonFactoryTest extends TestCase {
 
 	@BeforeClass

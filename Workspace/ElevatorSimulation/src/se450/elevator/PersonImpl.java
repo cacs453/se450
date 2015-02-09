@@ -6,6 +6,9 @@ package se450.elevator;
 
 /**
  * Person implementation.
+ * 
+ * @author Cheng Zhang
+ *
  */
 public class PersonImpl implements Person {
 	private int id;

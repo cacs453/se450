@@ -16,6 +16,12 @@ import se450.elevator.Request;
 import se450.elevator.common.DIRECTION;
 import se450.elevator.common.REQUEST_TYPE;
 
+/**
+ * JUNIT test.
+ * 
+ * @author Cheng Zhang
+ *
+ */
 public class ElevatorImplTest extends TestCase {	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -31,12 +37,7 @@ public class ElevatorImplTest extends TestCase {
 
 	@After
 	public void tearDown() throws Exception {
-	}
-			
-//	public static void main(String[] args) throws Exception {
-//		ElevatorImplTest elevatorImplTest = new ElevatorImplTest();
-//		elevatorImplTest.testAddRiderRequest();
-//	}
+	}			
 	
 	@Test
 	public  void testAddFloorRequest() throws Exception {	

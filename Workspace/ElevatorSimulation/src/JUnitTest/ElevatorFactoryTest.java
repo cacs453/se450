@@ -12,6 +12,12 @@ import org.junit.Test;
 import se450.elevator.ElevatorFactory;
 import se450.elevator.ElevatorImpl;
 
+/**
+ * JUNIT test.
+ * 
+ * @author Cheng Zhang
+ *
+ */
 public class ElevatorFactoryTest extends TestCase {
 
 	@BeforeClass
