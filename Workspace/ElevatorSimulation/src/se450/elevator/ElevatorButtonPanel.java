@@ -1,9 +1,12 @@
-/**
- * @ Cheng Zhang
- * @ 
- */
 package se450.elevator;
 
+/**
+ * Elevator Button Panel.
+ * For Phase II, the class is not used. The logic is embeded in ElevatorImpl class
+ * 
+ * @author Cheng Zhang
+ *
+ */
 public class ElevatorButtonPanel {	
 	private static int status; 
 	private static Elevator parentElevator;

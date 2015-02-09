@@ -1,5 +1,7 @@
 package se450.elevator.common;
-
+/**
+ * Toolset shared for all project to get current delta time and do formated print.
+ */
 import java.util.concurrent.TimeUnit;
 
 public class Toolset {

@@ -1,5 +1,11 @@
 package se450.elevator;
 
+/**
+ * This interface is the abstraction for all Elevators
+ * 
+ * @author Shan Gao
+ *
+ */
 
 public interface Elevator {
 	/**
