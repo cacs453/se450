@@ -6,35 +6,32 @@ import java.util.HashMap;
 import se450.elevator.common.Toolset;
 
 /**
+ * The simulator of the elevator system. This system reads the configuration from xml and runs as configured.
  * 
- * @author Johnny
- *
  */
 public class ElevatorSystem {
 	
-	public static void main(String[] args) {
-		
-		HashMap<String, ElevatorImpl> mapElevator = new HashMap<String, ElevatorImpl>();  
+	public static void main(String[] args) {		  
 
-		try {
+		try {			
+			
+			//initial the building
 	        Building building = Building.getBuilding();
 	        building.initilize();
         
 			Toolset.init();
 			Toolset.DEBUG = false;
 			
+			//create a hash map for elevator
+			HashMap<String, ElevatorImpl> mapElevator = new HashMap<String, ElevatorImpl>();
 			ArrayList<Elevator> elevatorList = building.getElevatorList();
 			for (int i = 0; i < elevatorList.size(); i++) {
 				ElevatorImpl ele = (ElevatorImpl) elevatorList.get(i);
 				mapElevator.put(Integer.toString(ele.getElevatorID()), ele);
 				ele.start();
 	        }
-			/*ElevatorImpl e1 = ElevatorFactory.createElevator(10, 16, 500, 500, 1, 15000);
-			ElevatorImpl e2 = ElevatorFactory.createElevator(10, 16, 500, 500, 1, 15000);
-			ElevatorImpl e3 = ElevatorFactory.createElevator(10, 16, 500, 500, 1, 15000);
-			e1.start();
-			e2.start();
-			e3.start();*/
+
+			//create the floor requests from person list
 			ArrayList<Person> personList = building.getPersonList();
 			long lastTriggerTime = 0;
 			for (int i = 0; i < personList.size(); i++) {
@@ -62,17 +59,8 @@ public class ElevatorSystem {
 						break;						
 				}												
 	        }
-			/*e1.addFloorRequest(11, DIRECTION.UP);
-			Thread.sleep(600);
-			e2.addFloorRequest(14, DIRECTION.UP);
-			Thread.sleep(600);
-			e2.addFloorRequest(13, DIRECTION.UP);
-			Thread.sleep(600);
-			e2.addFloorRequest(15, DIRECTION.UP);
-			Thread.sleep(35000);
-			e3.addFloorRequest(5, DIRECTION.UP);
-			Thread.sleep(500*7);*/
 			
+			//create the rider requests from the panel list
 			ArrayList<PanelRequest> panelRequestList = building.getPanelRequestList();
 			for (int i = 0; i < panelRequestList.size(); i++) {
 				PanelRequest panel = panelRequestList.get(i);
@@ -83,25 +71,15 @@ public class ElevatorSystem {
 				ElevatorImpl ele = mapElevator.get(Integer.toString(panel.getElevatorId()));
 				ele.addRiderRequest(panel.getFloorId());				
 	        }			
-			/*e3.addRiderRequest(16);
-			Thread.sleep(500);
-			e3.addRiderRequest(1);
-			Thread.sleep(500*16);
-			e3.addRiderRequest(2);
-			Thread.sleep(500);
-			e3.addRiderRequest(5);
-			Thread.sleep(500);
-			e3.addRiderRequest(3);*/
-
+			
+			//wait for all done
 			Thread.sleep(15000*2);
+			
+			//shut down all the elevators
 			for (int i = 0; i < elevatorList.size(); i++) {
 				ElevatorImpl ele = (ElevatorImpl) elevatorList.get(i);
 				ele.halt();
 	        }
-			/*Thread.sleep(15000*2);
-			e1.halt();
-			e2.halt();
-			e3.halt();*/
 			
 			Toolset.println("info", "Main thread exists.");
 		}

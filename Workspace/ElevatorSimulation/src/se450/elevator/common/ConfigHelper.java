@@ -15,8 +15,7 @@ import se450.elevator.ElevatorImpl;
 import se450.elevator.PersonImpl;
 
 /**
- * 
- * @author Johnny
+ * A helper class to get the configurations from xml file.
  *
  */
 public class ConfigHelper {
@@ -28,13 +27,17 @@ public class ConfigHelper {
 	private static final ArrayList<Person> personList = new ArrayList<Person>();
 	private static final ArrayList<PanelRequest> panelRequestList = new ArrayList<PanelRequest>();
 	
+	/**
+	 * Get all of the settings from xml file
+	 * 
+	 */
 	private static void GetConfig()
-	{
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();  
+	{		
         try  
-        {        	
+        {
+        	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();  
             DocumentBuilder db = dbf.newDocumentBuilder();  
-            Document doc = db.parse("config.xml");  
+            Document doc = db.parse("./src/se450/elevator/config/config.xml");  
   
             //floor number
             floorNumbers = Integer.parseInt(doc.getElementsByTagName("floornumbers").item(0).getFirstChild().getNodeValue());
@@ -144,6 +147,10 @@ public class ConfigHelper {
         }        
 	}
 	
+	/**
+	 * Get floor numbers of the building
+	 * 
+	 */
 	public static int getFloorNumbers() {
 		if (floorNumbers==0)
 			GetConfig();
@@ -151,6 +158,10 @@ public class ConfigHelper {
 		return floorNumbers;
 	}
 	
+	/**
+	 * Get elevator numbers of the building
+	 * 
+	 */
 	public static int getElevatorNumbers() {
 		if (elevatorNumbers==0)
 			GetConfig();
@@ -158,6 +169,10 @@ public class ConfigHelper {
 		return elevatorNumbers;
 	}
 	
+	/**
+	 * Get all of the elevator list, including their attributes
+	 * 
+	 */
 	public static ArrayList<Elevator> getElevatorList() {
 		if (elevatorList.size()==0)
 			GetConfig();
@@ -165,6 +180,10 @@ public class ConfigHelper {
 		return elevatorList;
 	}
 	
+	/**
+	 * Get all of the person list, including their attributes
+	 * 
+	 */
 	public static ArrayList<Person> getPersonList() {
 		if (personList.size()==0)
 			GetConfig();
@@ -172,6 +191,10 @@ public class ConfigHelper {
 		return personList;
 	}
 	
+	/**
+	 * Get all of the dummy requests inside the elevator
+	 * 
+	 */
 	public static ArrayList<PanelRequest> getPanelRequestList() {
 		if (panelRequestList.size()==0)
 			GetConfig();
