@@ -33,7 +33,7 @@ public class PersonImpl implements Person {
 		this.status = PERSON_STATUS.NONE;		
 	}
 		
-	public int getID() {
+	public int getPersonId() {
 		return id;
 	}
 	

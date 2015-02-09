@@ -19,7 +19,7 @@ public interface Person {
 	 * Get person id.
 	 * @return Person id.
 	 */
-	public int getID();
+	public int getPersonId();
 	
 	/**
 	 * Get from floor.
