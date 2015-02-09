@@ -4,18 +4,26 @@
  */
 package se450.elevator;
 
+/**
+ * Person factory.
+ */
 public class PersonFactory {
 	private final static int DEFAULT_PERSON_TYPE = 0;
+	private int personID = 0;
 	
 	public PersonFactory() {
-	}
+	}	
 	
-	public Person CreatePerson(int id, int fromFloor, int toFloor, int personType) {
-		Person person = new PersonImpl(id, fromFloor, toFloor, 0);
-		return person;
-	}
-	
-	public Person CreatePerson(int id, int fromFloor, int toFloor) {
-		return CreatePerson(id, fromFloor, toFloor, DEFAULT_PERSON_TYPE);
+	/**
+	 * Create a person.
+	 * @param fromFloor - The floor where the person was from.
+	 * @param toFloor - The floor where the person will go to.
+	 * @param triggerTime - The preset time when the person will trigger the elevator button.
+	 * @return Person instance.
+	 */
+	public Person CreatePerson(int fromFloor, int toFloor, long triggerTime) {
+		Person person = new PersonImpl(personID, fromFloor, toFloor, triggerTime);
+		personID++;
+		return person;		
 	}
 }

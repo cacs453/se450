@@ -4,6 +4,9 @@
  */
 package se450.elevator;
 
+/**
+ * Person implementation.
+ */
 public class PersonImpl implements Person {
 	private int id;
 	private int fromFloor;
@@ -14,6 +17,14 @@ public class PersonImpl implements Person {
 	private long waitEndTime;
 	private long rideEndTime;	
 			
+	/**
+	 * Constructor function.
+	 * @param id - The person id.
+	 * @param fromFloor - The floor where the person was from.
+	 * @param toFloor - The floor where the person will go to.
+	 * @param triggerTime - The preset time when the person will trigger the elevator button.
+	 * @return Person instance.
+	 */
 	public PersonImpl(int id, int fromFloor, int toFloor, long triggerTime) {
 		this.id = id;
 		this.fromFloor = fromFloor;
@@ -21,13 +32,8 @@ public class PersonImpl implements Person {
 		this.triggerTime = triggerTime;
 		this.status = PERSON_STATUS.NONE;		
 	}
-	
-	
-	/**
-	 * For dummy data
-	 * @return
-	 */
-	public int getPersonId() {
+		
+	public int getID() {
 		return id;
 	}
 	
@@ -39,10 +45,6 @@ public class PersonImpl implements Person {
 		return toFloor;
 	}
 	
-	/**
-	 * For dummy data
-	 * @return
-	 */
 	public long getTriggerTime() {
 		return triggerTime;
 	}
