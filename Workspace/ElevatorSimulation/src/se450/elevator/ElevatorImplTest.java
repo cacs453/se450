@@ -2,13 +2,15 @@ package se450.elevator;
 
 import static org.junit.Assert.*;
 import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * The JUNIT test for ElevatorImpl. Needs to access some PROTECTED method so lying in the same package.
+ */
 public class ElevatorImplTest extends TestCase {
 	protected ElevatorImpl e1= ElevatorFactory.createElevator(10, 16, 500, 500, 1, 15000);
 	

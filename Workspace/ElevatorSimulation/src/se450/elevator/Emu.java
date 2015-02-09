@@ -1,9 +1,5 @@
 package se450.elevator;
-/**
- * This class contains the EMU types for this project package.
- * @author Shan Gao
- *
- */
+
 enum DIRECTION  {
 	NONE, 
 	UP, 
@@ -16,6 +12,11 @@ enum REQUEST_TYPE {
 	TIMEOUT
 };
 
+/**
+ * This class contains the EMU types for this project package.
+ * @author Shan Gao
+ *
+ */
 public class Emu {
 
 }

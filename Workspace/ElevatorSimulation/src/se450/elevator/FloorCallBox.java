@@ -1,11 +1,9 @@
-/**
- * @ Cheng Zhang
- * @ 
- */
 package se450.elevator;
 
-
-
+/**
+ * Hasn't implemented for Phase II
+ *
+ */
 public class FloorCallBox {
 	private Floor parentFloor; 
 	private DIRECTION status;

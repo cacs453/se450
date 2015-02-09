@@ -1,15 +1,14 @@
 package se450.elevator;
 
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import se450.elevator.common.*;
+
 /**
  * The implementation of Elevator interface. It also extends Thread class. It contains the most important logic for elevator movement.
  * 
  * @author Shan Gao
  */
-
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import se450.elevator.common.*;
-
 public class ElevatorImpl extends Thread implements Elevator {
 
 	private int elevatorID;
