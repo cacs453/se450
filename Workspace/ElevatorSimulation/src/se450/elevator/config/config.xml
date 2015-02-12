@@ -3,6 +3,8 @@
 	<building>
 		<floornumbers>16</floornumbers>
 		<elevatornumbers>4</elevatornumbers>
+		<randompersonnumbers>10</randompersonnumbers>
+		<simulationduration>62000</simulationduration>
 	</building>
 	<elevators>
 		<elevator>

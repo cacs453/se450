@@ -1,7 +1,13 @@
 package se450.elevator;
 /**
- * Hasn't been implemented during Phase II. 
+ * Floor factory for creating floors. 
  */
 public class FloorFactory {
-
+	
+	private static int floorId = 0;
+	
+	public static FloorImpl createFloor() {
+		floorId++;
+		return new FloorImpl(floorId);
+	}
 }

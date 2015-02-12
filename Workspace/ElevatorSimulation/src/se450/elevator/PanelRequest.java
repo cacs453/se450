@@ -39,7 +39,6 @@ public class PanelRequest {
 	 * Get the floor id of the PanelRequest. 
 	 * 
 	 */
-
     public int getFloorId() {
 		return floorid;
 	}

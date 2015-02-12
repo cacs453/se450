@@ -33,9 +33,16 @@ public class ElevatorSystem {
 				ele.start();
 	        }
 
-			//create the floor requests from person list
-			ArrayList<Person> personList = building.getPersonList();
 			long lastTriggerTime = 0;
+			
+			//create person randomly
+			PersonGenerator pg = new PersonGenerator(building.getFloorNumbers(), building.getRandomPersonNumbers(), building.getSimulationDuration());
+			building.setPersonList(pg.getPersonList()); // Add the reference of the person list to building
+			new Thread(pg).start();
+			
+			/*
+			//create the floor requests from person list
+			ArrayList<Person> personList = building.getPersonList();			
 			for (int i = 0; i < personList.size(); i++) {
 				PersonImpl person = (PersonImpl) personList.get(i);
 				
@@ -60,10 +67,10 @@ public class ElevatorSystem {
 						ele.addFloorRequest(person.getFromFloor(), DIRECTION.UP);
 						break;						
 				}												
-	        }
+	        }*/
 			
 			//create the rider requests from the panel list
-			ArrayList<PanelRequest> panelRequestList = building.getPanelRequestList();
+			/*ArrayList<PanelRequest> panelRequestList = building.getPanelRequestList();
 			for (int i = 0; i < panelRequestList.size(); i++) {
 				PanelRequest panel = panelRequestList.get(i);
 				
@@ -82,7 +89,7 @@ public class ElevatorSystem {
 				ElevatorImpl ele = (ElevatorImpl) elevatorList.get(i);
 				ele.halt();
 	        }
-			
+			*/
 			Toolset.println("info", "Main thread exists.");
 		}
 		catch (Exception e) {
