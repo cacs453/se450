@@ -9,7 +9,9 @@ import se450.elevator.common.DIRECTION;
  *
  */
 public class FloorCallBox {	
-	public FloorCallBox() {
+	private Floor parentFloor;
+	public FloorCallBox(Floor floor) {
+		this.parentFloor = floor;
 	}
 	
 	public void pressUp(Person person) {
