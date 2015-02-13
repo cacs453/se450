@@ -41,8 +41,9 @@ public class FloorImpl implements Floor {
 	 * @param personList
 	 */
 	public void addPerson (Person person) {
-		this.personList.add(person);
-		callbox.pressButton(getDirection(person));
+		synchronized (personList) {
+			this.personList.add(person);
+		}
 	}
 	
 	/**
@@ -50,10 +51,12 @@ public class FloorImpl implements Floor {
 	 * @param personList
 	 */
 	public void removePerson (ArrayList<Person> removePersonList) {
-		for(int i = 0; i < removePersonList.size(); i++) {
-			for(int j = 0; j < personList.size(); j++) {
-				if (removePersonList.get(i).getPersonId() == removePersonList.get(j).getPersonId())
-					personList.remove(j);
+		synchronized (personList) {
+			for(int i = 0; i < removePersonList.size(); i++) {
+				for(int j = 0; j < personList.size(); j++) {
+					if (removePersonList.get(i).getPersonId() == removePersonList.get(j).getPersonId())
+						personList.remove(j);
+				}
 			}
 		}
 	}
@@ -74,13 +77,24 @@ public class FloorImpl implements Floor {
 	 * @return The list waiting person 
 	 */
 	public ArrayList<Person> getWaitingList() {
-		ArrayList<Person> waitList = new ArrayList<Person>();
-		for(int i = 0; i < personList.size(); i++) {
-			if (personList.get(i).getStatus() == PERSON_STATUS.WAITING)
-				waitList.add(personList.get(i));
+		synchronized (personList) {
+			ArrayList<Person> waitList = new ArrayList<Person>();
+			for(int i = 0; i < personList.size(); i++) {
+				if (personList.get(i).getStatus() == PERSON_STATUS.WAITING)
+					waitList.add(personList.get(i));
+			}
+			
+			return waitList;
 		}
-		return waitList;
 	}
+	
+	/**
+	 * Set call box for the person
+	 * @param person
+	 */
+	public void setCallBox(Person person) {
+		callbox.pressButton(getDirection(person));
+	}	
 	
 	private DIRECTION getDirection(Person person) {
 		if (person.getToFloor() > person.getFromFloor())

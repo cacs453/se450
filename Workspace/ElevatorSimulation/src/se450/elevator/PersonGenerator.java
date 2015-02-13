@@ -66,7 +66,7 @@ public class PersonGenerator implements Runnable {
 								fromFloor, toFloor,
 								(System.currentTimeMillis() - startTime));						
 						personList.add(person);
-						addPersonToFloor(person);
+						addPersonToFloor(person); // Add person to specified floor						
 						Toolset.println(
 								"info",
 								String.format(
@@ -120,6 +120,7 @@ public class PersonGenerator implements Runnable {
 			FloorImpl floor = (FloorImpl)floorList.get(i);
 			if (floor.getFloorId() == person.getFromFloor()) {				
 				floor.addPerson(person);
+				floor.setCallBox(person); //invoke the floor request immediately
 				break;
 			}
 		}
