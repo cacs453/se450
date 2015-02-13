@@ -40,10 +40,9 @@ public class FloorImpl implements Floor {
 	 * Add the persons to this floor during the building initialization.
 	 * @param personList
 	 */
-	public void addPerson (ArrayList<Person> personList) {
-		for(int i = 0; i < personList.size(); i++) {
-			this.personList.add(personList.get(i));
-		}		
+	public void addPerson (Person person) {
+		this.personList.add(person);
+		callbox.pressButton(getDirection(person));
 	}
 	
 	/**
@@ -64,13 +63,10 @@ public class FloorImpl implements Floor {
 	 * Means someone pressed a up/down button in this floor, then controller should send an elevator to this floor.
 	 * @param direction
 	 */
-	public void pressButton (DIRECTION direction) throws InvalidParameterException {
-		if(direction == DIRECTION.UP)
-			callbox.pressUp(null);
-		else if(direction == DIRECTION.UP)
-			callbox.pressDown(null);
-		else
-			throw new InvalidParameterException("Direction must be specified to Up or Down!");
+	public void pressButton (DIRECTION direction) {
+
+		callbox.pressButton(direction);
+		
 	}
 	
 	/**
@@ -84,5 +80,14 @@ public class FloorImpl implements Floor {
 				waitList.add(personList.get(i));
 		}
 		return waitList;
+	}
+	
+	private DIRECTION getDirection(Person person) {
+		if (person.getToFloor() > person.getFromFloor())
+			return DIRECTION.UP;
+		else if (person.getToFloor() < person.getFromFloor())
+			return DIRECTION.DOWN;
+		else
+			return DIRECTION.NONE;
 	}
 }

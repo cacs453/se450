@@ -13,7 +13,7 @@ public interface Floor {
 	 * Add the persons to this floor during the building initialization.
 	 * @param personList
 	 */
-	public void addPerson (ArrayList<Person> personList);
+	public void addPerson (Person person);
 	
 	/**
 	 * Remove the person from this floor if he/she gets in the elevator

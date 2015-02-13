@@ -37,6 +37,7 @@ public class ElevatorSystem {
 			
 			//create person randomly
 			PersonGenerator pg = new PersonGenerator(building.getFloorNumbers(), building.getRandomPersonNumbers(), building.getSimulationDuration());
+			pg.setFloorList(building.getFloorsList());
 			building.setPersonList(pg.getPersonList()); // Add the reference of the person list to building
 			new Thread(pg).start();
 			
