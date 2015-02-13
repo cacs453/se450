@@ -14,7 +14,7 @@ public class FloorCallBox {
 		parentFloor = floor;
 	}
 	
-	public void pressButton(DIRECTION direction, Person person) {
-		Controller.getInstance().addFloorRequest(person.getFromFloor(), direction, person);
+	public void pressButton(DIRECTION direction) {
+		Controller.getInstance().addFloorRequest(parentFloor.getFloorId(), direction);
 	}	
 }

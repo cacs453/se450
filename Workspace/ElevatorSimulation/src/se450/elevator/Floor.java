@@ -34,4 +34,9 @@ public interface Floor {
 	 */
 	public ArrayList<Person> getWaitingList();
 	
+	/**
+	 * Get the floorId
+	 * @return floorId
+	 */
+	public int getFloorId();
 }
