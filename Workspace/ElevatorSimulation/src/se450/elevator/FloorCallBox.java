@@ -11,14 +11,10 @@ import se450.elevator.common.DIRECTION;
 public class FloorCallBox {	
 	private Floor parentFloor;
 	public FloorCallBox(Floor floor) {
-		this.parentFloor = floor;
+		parentFloor = floor;
 	}
 	
-	public void pressUp(Person person) {
-		Controller.getInstance().addFloorRequest(person.getFromFloor(), DIRECTION.UP, person);
-	}
-	
-	public void pressDown(Person person) {
-		Controller.getInstance().addFloorRequest(person.getFromFloor(), DIRECTION.DOWN, person);
-	}		
+	public void pressButton(DIRECTION direction, Person person) {
+		Controller.getInstance().addFloorRequest(person.getFromFloor(), direction, person);
+	}	
 }
