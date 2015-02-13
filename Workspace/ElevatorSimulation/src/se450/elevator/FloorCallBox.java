@@ -2,40 +2,21 @@ package se450.elevator;
 
 import se450.elevator.common.DIRECTION;
 
-
 /**
- * Hasn't implemented for Phase II
+ * FloorCallBox
  * 
  * @author Cheng Zhang
  *
  */
-public class FloorCallBox {
-	private Floor parentFloor; 
-	private DIRECTION status;
-	private void pressButton(Person person, DIRECTION input) {
-		
-	}
-	
-	public FloorCallBox(Floor floor) {
-		
+public class FloorCallBox {	
+	public FloorCallBox() {
 	}
 	
 	public void pressUp(Person person) {
-		
+		Controller.getInstance().addFloorRequest(person.getFromFloor(), DIRECTION.UP, person);
 	}
 	
 	public void pressDown(Person person) {
-		
-	}
-	
-	// reset up status
-	public void resetUp() {
-		
-	}
-	
-	// reset down status	
-	public void resetDown() {
-		
-	}
-	
+		Controller.getInstance().addFloorRequest(person.getFromFloor(), DIRECTION.DOWN, person);
+	}		
 }

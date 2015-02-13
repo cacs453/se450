@@ -6,6 +6,7 @@
  */
 package se450.elevator;
 
+import se450.elevator.common.DIRECTION;
 import se450.elevator.common.PERSON_STATUS;
 
 public interface Person {
@@ -44,8 +45,10 @@ public interface Person {
 	public void startWaiting();
 	/**
 	 * End waiting.
+	 * @param elevatorIdIn - The elevator id which the person is taking.
 	 */
-	public void endWaiting();
+	public void endWaitingWithElevatorId(int elevatorIdIn);
+	
 	/**
 	 * End riding.
 	 */
@@ -58,4 +61,7 @@ public interface Person {
 	 * Get ride time.
 	 */		
 	public long getRideTime();
+	
+	public DIRECTION direction();
+	
 }

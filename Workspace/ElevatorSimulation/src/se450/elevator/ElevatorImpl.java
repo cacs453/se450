@@ -105,6 +105,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 				}
 				else { //Moving
 					Request request = this.requestList.get(0);
+					//Operation on person list - cheng
+					
 					if (this.currentFloor==request.floor) { //Arrived at the requested floor
 						
 						//Remove the request(s) from the list
@@ -126,6 +128,9 @@ public class ElevatorImpl extends Thread implements Elevator {
 							Thread.sleep(this.timePerDoorOp);
 							Toolset.println("info", "Elevator "+this.elevatorID+" Doors Close");
 							this.lastDoorCloseTime = Toolset.getDeltaTimeLong();
+							
+							//Operation on person list - cheng
+							
 						}
 						
 						if (this.requestList.size()==0) { //No other task
@@ -275,6 +280,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 		else { //Moving
 			int i;
 			for (i=0; i<requestList.size(); i++)
+				//Ignore the same request, but still add related person to currentRider - cheng
 				if (isNearer(request, this.requestList.get(i)))
 					break;
 			this.requestList.add(i,request);

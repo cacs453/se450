@@ -4,6 +4,7 @@
  */
 package se450.elevator;
 import se450.elevator.common.PERSON_STATUS;
+import se450.elevator.common.*;
 
 /**
  * Person implementation.
@@ -13,6 +14,7 @@ import se450.elevator.common.PERSON_STATUS;
  */
 public class PersonImpl implements Person {
 	private int id;
+	private int elevatorId; // The elevator id which the person is taking.	
 	private int fromFloor;
 	private int toFloor;
 	private long triggerTime; 
@@ -31,12 +33,17 @@ public class PersonImpl implements Person {
 	 */
 	public PersonImpl(int id, int fromFloor, int toFloor, long triggerTime) {
 		this.id = id;
+		this.elevatorId = -1;
 		this.fromFloor = fromFloor;
 		this.toFloor = toFloor;
 		this.triggerTime = triggerTime;
 		this.status = PERSON_STATUS.NONE;		
 	}
 		
+	public int getElevatorId() {
+		return elevatorId;
+	}
+	
 	public int getPersonId() {
 		return id;
 	}
@@ -62,7 +69,8 @@ public class PersonImpl implements Person {
 		this.status = PERSON_STATUS.WAITING;
 	}
 	
-	public void endWaiting() {
+	public void endWaitingWithElevatorId(int elevatorIdIn) {
+		this.elevatorId = elevatorIdIn;
 		this.waitEndTime = System.currentTimeMillis();
 		this.status = PERSON_STATUS.RIDDING;
 	}
@@ -78,6 +86,16 @@ public class PersonImpl implements Person {
 	
 	public long getRideTime() {
 		return rideEndTime - waitEndTime;
+	}
+	
+	public DIRECTION direction() {
+		DIRECTION direction;
+		if (this.toFloor == this.fromFloor) 
+			direction = DIRECTION.NONE;
+		else {
+			direction = this.toFloor > this.fromFloor ? DIRECTION.UP : DIRECTION.DOWN;
+		}
+		return direction;
 	}
 }
 

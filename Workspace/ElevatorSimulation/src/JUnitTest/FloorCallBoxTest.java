@@ -18,7 +18,7 @@ import org.junit.Test;
 public class FloorCallBoxTest extends TestCase {
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() throws RuntimeException  {
 	}
 
 	@AfterClass
