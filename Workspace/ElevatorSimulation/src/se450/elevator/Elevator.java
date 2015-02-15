@@ -1,5 +1,7 @@
 package se450.elevator;
 
+import java.security.InvalidParameterException;
+
 import se450.elevator.common.DIRECTION;
 
 /**
@@ -28,4 +30,6 @@ public interface Elevator {
 	 * @see #addFloorToTaskList(int)
 	 */
 	public void addRiderRequest (int floor);
+	
+	public void addRequest (Request request) throws InvalidParameterException;
 }

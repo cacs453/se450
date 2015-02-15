@@ -93,6 +93,7 @@ public class FloorImpl implements Floor {
 	 * @param person
 	 */
 	public void setCallBox(Person person) {
+		person.startWaiting();
 		callbox.pressButton(getDirection(person));
 	}	
 	

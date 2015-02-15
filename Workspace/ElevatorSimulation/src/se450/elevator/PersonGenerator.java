@@ -64,9 +64,7 @@ public class PersonGenerator implements Runnable {
 
 						PersonImpl person = new PersonImpl(personCount++,
 								fromFloor, toFloor,
-								(System.currentTimeMillis() - startTime));						
-						personList.add(person);
-						addPersonToFloor(person); // Add person to specified floor						
+								(System.currentTimeMillis() - startTime));	
 						Toolset.println(
 								"info",
 								String.format(
@@ -74,6 +72,9 @@ public class PersonGenerator implements Runnable {
 										person.getPersonId(),
 										person.getFromFloor(),
 										person.getToFloor()));
+						
+						personList.add(person);
+						addPersonToFloor(person); // Add person to specified floor						
 						Thread.sleep((long) (randomWithRange(generationSpan
 								- generationSpan / 2, generationSpan
 								+ generationSpan / 2) * 1000));

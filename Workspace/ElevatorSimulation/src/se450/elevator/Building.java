@@ -128,6 +128,7 @@ public class Building {
     	for(int i = 0; i < configDTO.getFloorNumbers(); i++) {
 			floorList.add(FloorFactory.createFloor());
 		}
+    	Controller.getInstance().start();
     	Toolset.println("info", "Building created - "+ configDTO.getFloorNumbers()+" floors, "+configDTO.getElevatorNumbers()+" elevators");
     }
 }

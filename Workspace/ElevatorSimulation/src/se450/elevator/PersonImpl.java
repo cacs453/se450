@@ -65,18 +65,17 @@ public class PersonImpl implements Person {
 	}
 	
 	public void startWaiting() {
-		this.waitStartTime = System.currentTimeMillis();
+		this.waitStartTime = Toolset.getDeltaTimeLong();
 		this.status = PERSON_STATUS.WAITING;
 	}
 	
-	public void endWaitingWithElevatorId(int elevatorIdIn) {
-		this.elevatorId = elevatorIdIn;
-		this.waitEndTime = System.currentTimeMillis();
+	public void endWaiting() {
+		this.waitEndTime = Toolset.getDeltaTimeLong();
 		this.status = PERSON_STATUS.RIDDING;
 	}
 	
 	public void endRiding() {
-		this.rideEndTime = System.currentTimeMillis();
+		this.rideEndTime = Toolset.getDeltaTimeLong();
 		this.status = PERSON_STATUS.ARRIVED;
 	}
 	
