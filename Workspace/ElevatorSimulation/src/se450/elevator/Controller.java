@@ -51,8 +51,7 @@ public class Controller extends Thread {
 				{
 					ElevatorImpl ele = (ElevatorImpl)Building.getBuilding().getElevatorList().get(0);
 						if (ele != null) {
-							maxWaitingtimeLimit = Building.getBuilding().getFloorNumbers()
-									* (	ele.timePerFloor() + ele.timePerDoorOp() ) * 2;
+							maxWaitingtimeLimit = Building.getBuilding().getFloorNumbers() * (	ele.timePerFloor() + ele.timePerDoorOp() ) * 2;
 						}
 				}
 			
@@ -99,9 +98,9 @@ public class Controller extends Thread {
 							+" Waiting:"+waitingCount
 							+" Riding:"+riddingCount
 							+" Arrived:"+arrivedCount
-//							+" AvgWaitingtime:"+AvgWaitingtime	
+							+" AvgWaitingtime:"+AvgWaitingtime	
 //							+" maxWaitingtime:"+maxWaitingtime	
-//							+" ("
+//							+"("
 //							+ (maxWaitingtime <= maxWaitingtimeLimit ? "<=" : ">")
 //							+ maxWaitingtimeLimit
 //							+")"
@@ -126,8 +125,8 @@ public class Controller extends Thread {
 	}
 	
 	/**
-	 * Optimization: 
-	 * Search the longest distance request as the initial request same direction as the first request's in the pending list:
+	 * Search initial request in the pending list, which has same direction as the first request's, 
+	 * and is closest to the start floor of that direction.
 	 * 	 UP		: Closest to 1 floor.
 	 *	 DOWN	: Closest to max floor. 
 	 * So that the elevator can respond all pending requests in the same direction.	
@@ -136,24 +135,33 @@ public class Controller extends Thread {
 	 */
 	public Request getInitialRequestForElevator(ElevatorImpl ele) {
 		Request initialRequest = null;
-
 		synchronized(this.pendingList) {
 			Request firstRequest = null;
-			if (this.pendingList != null && this.pendingList.size() > 0) {
-				firstRequest = this.pendingList.get(0);
+			 //If last floor request is UP, now elevator is idle, then prior for DOWN request in pendingList this time. 
+			// To insure person's waiting time is smaller than floor*(opTime+travelTime)*2. 
+			if (this.pendingList != null && this.pendingList.size() > 0) {		
+				if (ele.lastFloorRequestDirection() != DIRECTION.NONE) {
+					for (Request r : this.pendingList) {
+						if (
+							(ele.lastFloorRequestDirection()==DIRECTION.UP && r.direction ==DIRECTION.DOWN)
+						||	(ele.lastFloorRequestDirection()==DIRECTION.DOWN && r.direction ==DIRECTION.UP)
+							) {
+							firstRequest = r;
+							break;
+						}
+					}
+				}
+				
+				if (firstRequest==null)
+					firstRequest = this.pendingList.get(0);				
 			}
 
 			if (firstRequest != null) 
 			{
-				int closestDistance;
+				int closestDistance = Integer.MAX_VALUE;
 				int maxFloor = ele.getMaxFloor();
-				if (firstRequest.direction == DIRECTION.UP) 
-					closestDistance = Math.abs(firstRequest.floor - 1);				
-				else 
-					closestDistance = Math.abs(maxFloor - firstRequest.floor);				
-				 
 				int selectedIndex = 0;
-				for (int i = 1; i < this.pendingList.size(); i++) 
+				for (int i = 0; i < this.pendingList.size(); i++) 
 				{
 					Request r = this.pendingList.get(i);
 					int distance;
@@ -260,7 +268,7 @@ public class Controller extends Thread {
 	}
 	
 	/**
-	 * Add a request to pending list.
+	 * Add one request to the pending list.
 	 * @param request
 	 */
 	public void addPendingRequest(Request request) {
