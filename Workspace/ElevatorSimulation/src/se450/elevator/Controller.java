@@ -19,12 +19,13 @@ public class Controller extends Thread {
 	private boolean halt = false;
 	private long threadInterval = 100;
 	String status_string = "";
+	private static double  maxWaitingtimeLimit = -1;
 	
 	public static Controller getInstance() {
 		if (instance == null) {
 			synchronized(Controller.class) {
 				if (instance == null) {
-					instance = new Controller();
+					instance = new Controller();																	
 				}
 			}
 		}
@@ -40,9 +41,21 @@ public class Controller extends Thread {
 	}
 	
 	@Override
+	/**
+	 * maxWaitingtime   <= maxFloor * (opTime+travelTime)*2 
+	 */
 	public void run() {
-		while(!this.halt) {						
+		while(!this.halt) {			
 			try {
+				if (maxWaitingtimeLimit==-1) 
+				{
+					ElevatorImpl ele = (ElevatorImpl)Building.getBuilding().getElevatorList().get(0);
+						if (ele != null) {
+							maxWaitingtimeLimit = Building.getBuilding().getFloorNumbers()
+									* (	ele.timePerFloor() + ele.timePerDoorOp() ) * 2;
+						}
+				}
+			
 				ArrayList<Person> personList = Building.getBuilding().getPersonList();		
 				synchronized(personList) {
 					// Person list.
@@ -53,6 +66,7 @@ public class Controller extends Thread {
 					int arrivedCount=0;
 					int totalWaitingtime=0;				
 					int AvgWaitingtime=0; 						
+					double maxWaitingtime=0; 						
 					
 					total = personList.size();					
 					for (Person person : personList) {
@@ -67,6 +81,8 @@ public class Controller extends Thread {
 							riddingCount++;
 							break;
 						case ARRIVED:
+							if (maxWaitingtime < person.getWaitTime())
+								maxWaitingtime = person.getWaitTime();
 							totalWaitingtime += person.getWaitTime();
 							arrivedCount++;
 							break;							
@@ -77,13 +93,18 @@ public class Controller extends Thread {
 						AvgWaitingtime = totalWaitingtime / arrivedCount;
 					}
 					
-					String status_string = "ElevatorController -> PersonList - "
+					String status_string = "ElevatorController -> PersonList -"
 							+" Total:"+total				
 							+" NONE:"+noneCount
 							+" Waiting:"+waitingCount
 							+" Riding:"+riddingCount
 							+" Arrived:"+arrivedCount
-							+" AvgWaitingtime:"+AvgWaitingtime						
+//							+" AvgWaitingtime:"+AvgWaitingtime	
+//							+" maxWaitingtime:"+maxWaitingtime	
+//							+" ("
+//							+ (maxWaitingtime <= maxWaitingtimeLimit ? "<=" : ">")
+//							+ maxWaitingtimeLimit
+//							+")"
 							;				
 					
 					if (status_string.compareTo(this.status_string) !=0 ) 
@@ -105,17 +126,78 @@ public class Controller extends Thread {
 	}
 	
 	/**
-	 * Distribute pending request to idle elevator. This function is called by idle elevator itself.
-	 * @param elevator
+	 * Optimization: 
+	 * Search the longest distance request as the initial request same direction as the first request's in the pending list:
+	 * 	 UP		: Closest to 1 floor.
+	 *	 DOWN	: Closest to max floor. 
+	 * So that the elevator can respond all pending requests in the same direction.	
+	 * @param ele
+	 * @return
 	 */
-	public void handlePendingListForIdleElevator(ElevatorImpl elevator) throws InvalidParameterException {
+	public Request getInitialRequestForElevator(ElevatorImpl ele) {
+		Request initialRequest = null;
+
+		synchronized(this.pendingList) {
+			Request firstRequest = null;
+			if (this.pendingList != null && this.pendingList.size() > 0) {
+				firstRequest = this.pendingList.get(0);
+			}
+
+			if (firstRequest != null) 
+			{
+				int closestDistance;
+				int maxFloor = ele.getMaxFloor();
+				if (firstRequest.direction == DIRECTION.UP) 
+					closestDistance = Math.abs(firstRequest.floor - 1);				
+				else 
+					closestDistance = Math.abs(maxFloor - firstRequest.floor);				
+				 
+				int selectedIndex = 0;
+				for (int i = 1; i < this.pendingList.size(); i++) 
+				{
+					Request r = this.pendingList.get(i);
+					int distance;
+					if (r.direction == firstRequest.direction) {
+						if (firstRequest.direction == DIRECTION.UP) 
+							distance = Math.abs(r.floor - 1);				
+						else 
+							distance = Math.abs(maxFloor - r.floor);	
+						
+						if (distance < closestDistance) {
+							closestDistance = distance;
+							selectedIndex = i;
+						}
+					}					
+				}
+				
+				initialRequest = this.pendingList.get(selectedIndex);
+			}
+		}
+		
+		return initialRequest;
+	}
+	
+	/**
+	 * Distribute pending requests to idle elevator. This function is called by idle elevator itself.
+	 * @param elevator
+	 * @return If the elevator obtains at least one pending request.
+	 */
+	public boolean handlePendingListForIdleElevator(ElevatorImpl elevator) throws InvalidParameterException {
 		if (!elevator.isIdle()) {
 			throw new InvalidParameterException("The elevator is not idle!");
 		}		
+		
+		boolean obtainedPendingRequest = false;
 		synchronized(pendingList) {			
+			Request initialRequest = getInitialRequestForElevator(elevator);
+			if (initialRequest != null) {
+				elevator.addRequest(initialRequest);
+				pendingList.remove(initialRequest); 
+			}
+			
 			for (int i= 0; i < pendingList.size(); i++) {
 				Request request = pendingList.get(i);												
-				if (elevator.isAvailableForRequest(request)) {
+				if (elevator.isAvailableForRequest(request, true)) {
 					elevator.addRequest(request);
 					pendingList.remove(i); 
 					i--;
@@ -123,6 +205,7 @@ public class Controller extends Thread {
 				}
 			}			
 		}
+		return obtainedPendingRequest;
 	}
 	
 	/**
@@ -140,7 +223,8 @@ public class Controller extends Thread {
 		ArrayList<ElevatorImpl> availableElevators = new ArrayList<ElevatorImpl>();
 		
 		// Get available elevators.
-		for (int i = 0; i < elevatorList.size(); i++) {
+		for (int i = 0; i < elevatorList.size(); i++) 
+		{
 			ElevatorImpl ele = (ElevatorImpl)elevatorList.get(i);
 			if (ele.isAvailableForRequest(request)) {
 				availableElevators.add(ele);
@@ -150,11 +234,11 @@ public class Controller extends Thread {
 		// Get the best elevator to respond the request with shortest waiting time.
 		long shortestWaitingTime = Long.MAX_VALUE;
 		for (int i = 0; i < availableElevators.size(); i++) {
-			if(i==0) {
+//			if(i==0) {
 //				Toolset.println("info", "ElevatorController -> CompareWaitingTime for RequestType:"+
 //						request.type+" RequestFloor:"+request.floor+" Direction:"+request.direction+
 //						"");
-			}
+//			}
 			ElevatorImpl ele = availableElevators.get(i);
 			long waitingTime = ele.calculateWaitingTimeForRequest(request);
 			if (waitingTime < shortestWaitingTime) {
@@ -172,7 +256,29 @@ public class Controller extends Thread {
 	}
 	
 	public void printPendingList() {
-		Toolset.println("info", "ElevatorController -> PendingList count: "+pendingList.size());
+		Toolset.println("info", "ElevatorController -> PendingList amount: "+pendingList.size());
+	}
+	
+	/**
+	 * Add a request to pending list.
+	 * @param request
+	 */
+	public void addPendingRequest(Request request) {
+		synchronized(pendingList) {
+			boolean alreadyExists = false;
+			for (Request r : pendingList) {
+				if (r.isEqualTo(request)) {
+					alreadyExists = true;
+					break;
+				}
+					
+			}
+			
+			if (!alreadyExists) {
+				pendingList.add(request);
+				printPendingList();
+			}
+		}
 	}
 	
 	public void addFloorRequest (int floor, DIRECTION direction) {
@@ -180,10 +286,7 @@ public class Controller extends Thread {
 				
 		if (!chooseElevatorForRequest(request)) {
 			// No elevator is available.
-			synchronized(pendingList) {	
-				pendingList.add(request);
-				printPendingList();
-			}
+			addPendingRequest(request);
 		}		
 	}
 }

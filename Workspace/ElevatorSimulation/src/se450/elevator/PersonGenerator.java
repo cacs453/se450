@@ -68,10 +68,12 @@ public class PersonGenerator implements Runnable {
 						Toolset.println(
 								"info",
 								String.format(
-										"PersonGenerator -> New Person [%d] is generated in floor [%s] with destination floor [%s]",
+										"PersonGenerator -> New Person [%d] is generated in floor [%s] with destination floor [%s]. (%s)",
 										person.getPersonId(),
 										person.getFromFloor(),
-										person.getToFloor()));
+										person.getToFloor(),
+										Request.createWithPerson(person).toInfoString()
+										));
 						
 						personList.add(person);
 						addPersonToFloor(person); // Add person to specified floor						

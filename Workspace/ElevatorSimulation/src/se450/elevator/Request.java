@@ -18,4 +18,26 @@ public class Request {
 		this.floor = floor;
 		this.direction = direction;
 	}
+	
+	public static Request createWithPerson(Person person) {
+		Request r = new Request(REQUEST_TYPE.FLOOR, person.getFromFloor(), person.direction());		
+		return r;
+	}
+	
+	/**
+	 * Check if this is equal to the input request.
+	 * @param request
+	 * @return
+	 */
+	public boolean isEqualTo(Request request) {
+		boolean result = false;
+		if (this.type == request.type && this.floor==request.floor && this.direction==request.direction)
+			result = true;
+		return result;
+	}
+	
+	public String toInfoString() {
+		String str = String.format("%d%s", this.floor, this.direction==DIRECTION.UP ? "↑" : "↓");
+		return str;
+	}
 }

@@ -20,7 +20,9 @@ public class ElevatorImpl extends Thread implements Elevator {
 	private int defaultFloor;
 	private int timeOut;
 	private long lastDoorCloseTime;
-	//private boolean isMoving;
+	//private boolean isMoving; 
+	// The requested , although this.currentFloor .
+	private int lastPassedFloor = -1; // Indicates last floor being passed(Door closed), for the condition that the elevator is between two floors.
 	private DIRECTION movingDirection;
 	protected int currentFloor;
 	private ArrayList<Person> currentRider;
@@ -79,15 +81,29 @@ public class ElevatorImpl extends Thread implements Elevator {
 			try {
 				if (this.movingDirection==DIRECTION.NONE) { //Idling
 					if (this.requestList.size()==0) { //No task
-						if (Toolset.getDeltaTimeLong()-this.lastDoorCloseTime>=this.timeOut) { //Time out, go to default floor
+						if (Toolset.getDeltaTimeLong()-this.lastDoorCloseTime>=this.timeOut) 
+						{ //Time out, go to default floor
 							if (this.currentFloor!=this.defaultFloor)
 								this.requestList.add(new Request(REQUEST_TYPE.TIMEOUT, this.defaultFloor, DIRECTION.NONE));
 						}
-						else { //Continue idling
+						else 
+						{ //Continue idling								
 							Toolset.println("debug", "Elevator "+this.elevatorID+" is idling.");
-							// Check pending list in Elevator Controller - cheng
-							Controller.getInstance().handlePendingListForIdleElevator(this);
+							// Check pending list in Elevator Controller - Cheng						
+							Controller.getInstance().handlePendingListForIdleElevator(this);								
 						}
+						
+				         try {// Wait for something to happen (request added or removed)
+			    				synchronized(this.requestList) {//wait must operate the object with synchronized lock.
+									if (this.requestList.size()==0) {
+										// Start waiting by multiple-thread concurrency method, will respond in real time compared with sleeping.
+										// wait(): Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() 
+										this.requestList.wait();
+									}
+								}            				    			
+				            } catch (InterruptedException ex) {
+				                System.out.println("Interrupted! Going back to check for requests/wait");
+				            }
 					}
 					else { //Get something to do
 						Request request = this.requestList.get(0);
@@ -120,6 +136,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 						}
 						else {
 							//Open/close the door
+							this.lastPassedFloor = this.currentFloor;
+							
 							String msg = "Elevator "+this.elevatorID+" has arrived at Floor "+this.currentFloor+" for ";
 							if (request.type==REQUEST_TYPE.FLOOR)
 								msg = msg + request.direction + " request";
@@ -127,11 +145,22 @@ public class ElevatorImpl extends Thread implements Elevator {
 								msg = msg + "Rider Request";
 							Toolset.println("info", msg);
 							Toolset.println("info", "Elevator "+this.elevatorID+" Doors Open");
+							
+							if (this.requestList.size()==0) { //No other task
+								this.movingDirection=DIRECTION.NONE;
+							}
+							else {
+								//Decide a new moving direction
+								decide_new_moving_direction(this.requestList.get(0));
+							}						
+							//Switch person status and add/remove corresponding requests.
+							onArriveAtFloor(this.currentFloor);	
+							
 							Thread.sleep(this.timePerDoorOp);
 							Toolset.println("info", "Elevator "+this.elevatorID+" Doors Close");
 							this.lastDoorCloseTime = Toolset.getDeltaTimeLong();						
-						}
-											
+						}								
+						
 						if (this.requestList.size()==0) { //No other task
 							this.movingDirection=DIRECTION.NONE;
 						}
@@ -139,16 +168,16 @@ public class ElevatorImpl extends Thread implements Elevator {
 							//Decide a new moving direction
 							decide_new_moving_direction(this.requestList.get(0));
 						}
-						
-						//Switch person status and add/remove corresponding requests.
-						onArriveAtFloor(this.currentFloor);						
 
 						//Record passing time
 						this.lastFloorPassingTime = Toolset.getDeltaTimeLong();
 					}
 					else { //On the way
-						if (!hasPrinted) { 
-							String msg = "Elevator "+this.elevatorID+" moving from Floor "+this.currentFloor+" to Floor ";
+						if (!hasPrinted) { 			
+							this.lastPassedFloor = this.currentFloor;
+							
+							String directionFlag = (this.movingDirection==DIRECTION.UP) ? " ↑" : " ↓";
+							String msg = "Elevator "+this.elevatorID+" moving"+directionFlag+" from Floor "+this.currentFloor+" to Floor ";
 							if (this.movingDirection==DIRECTION.UP)
 								msg = msg + (this.currentFloor+1);
 							else if (this.movingDirection==DIRECTION.DOWN)
@@ -169,7 +198,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 					}
 				}
 
-				Thread.sleep(this.checkInterval);
+//				Thread.sleep(this.checkInterval);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -195,6 +224,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * 	
 	 * @param request
 	 * @return
+	 * @author Cheng Zhang
 	 */
 	protected DIRECTION caculate_direction_by_request(Request request) {
 		DIRECTION direction = DIRECTION.NONE;		
@@ -226,13 +256,12 @@ public class ElevatorImpl extends Thread implements Elevator {
 		for (int i=0; i<requestList.size(); i++) {
 			Request r = requestList.get(i);
 			if (r.type==REQUEST_TYPE.FLOOR)
-				fr = fr + r.floor + ", ";
+				fr = String.format("%s%d%c%s", fr,  r.floor, r.direction == DIRECTION.UP ? '↑' : '↓', i == requestList.size()-1? "" : ", ");
 			else if (r.type==REQUEST_TYPE.RIDER)
 				rr = rr + r.floor + ", ";
 		}
-		return "[Floor Requests: "+fr+"] [Rider Requests: "+rr+"]";
-	}
-	
+		return String.format( "[Floor Requests: %s ] [Rider Requests: %s]", fr, rr);
+	}	
 	
 	/**
 	 * Calculate the distance of a request to the elevator based on the current elevator moving direction.
@@ -257,8 +286,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 			}
 			
 			if (eleDirection==DIRECTION.UP) { //Elevator is moving up
-				if (request.direction==DIRECTION.UP) { //Floor request is to go up
-					if (request.floor>this.currentFloor) { // Same direction ahead
+				if (request.direction==DIRECTION.UP) { //Floor request is to go up					
+					if (request.floor>=this.currentFloor) { // Same direction ahead
 						return request.floor - this.currentFloor;
 					}
 					else { // Same direction but behind. Note that this INCLUDE the request.floor==this.currentFloor case.
@@ -271,7 +300,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 			}
 			else if (eleDirection==DIRECTION.DOWN) { //Elevator is moving down
 				if (request.direction==DIRECTION.DOWN) { //Floor request is to go down
-					if (request.floor<this.currentFloor) { // Same direction ahead
+					if (request.floor<=this.currentFloor) { // Same direction ahead
 						return this.currentFloor - request.floor;
 					}
 					else { // Same direction but behind. Note that this INCLUDE the request.floor==this.currentFloor case.
@@ -320,6 +349,19 @@ public class ElevatorImpl extends Thread implements Elevator {
 		}
 	}
 	
+	/**
+	 * Notify after the request list has been changed, such that 'wait' function in run will stop waiting.  
+	 */
+	public void notifyRequestList() 
+	{
+		synchronized(this.requestList) {//notify must operate the object with synchronized lock.			
+			if (this.requestList.size() > 0) {
+				//notify(): Wakes up a single thread that is waiting on this object's monitor.
+				this.requestList.notify();
+			}
+		}
+	}
+	
 	public void addFloorRequest (int floor, DIRECTION direction) throws InvalidParameterException{
 
 		if (floor<=0 || direction==DIRECTION.NONE || floor==1 && direction==DIRECTION.DOWN || floor==this.maxFloor && direction==DIRECTION.UP)
@@ -348,6 +390,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 					this.requestList.add(i,request);
 			}
 		}
+		
+		notifyRequestList();
 	};
 
 	public void addRiderRequest (int floor) throws InvalidParameterException{
@@ -358,7 +402,6 @@ public class ElevatorImpl extends Thread implements Elevator {
 			if (this.movingDirection==DIRECTION.UP && floor<=this.currentFloor ||
 					this.movingDirection==DIRECTION.DOWN && floor>=this.currentFloor) { //Request need to be ignored				
 				throw new InvalidParameterException("Elevator "+this.elevatorID+" Rider Request made for #"+floor+" floor - WRONG DIRECTION - Ignoring Request");
-				//Toolset.println("info", "Elevator "+this.elevatorID+" Rider Request made for #"+floor+" floor - WRONG DIRECTION - Ignoring Request");				
 			}
 			else 
 			{
@@ -384,10 +427,16 @@ public class ElevatorImpl extends Thread implements Elevator {
 				}
 			}
 		}
+		
+		notifyRequestList();
 	};
 	
 	public void halt() {
 		this.halt = true;
+		synchronized(this.requestList) {
+			// Wake up all threads that waiting on this object's monitor.
+			this.requestList.notifyAll();
+		}
 	}
 	
 	public int getElevatorID()
@@ -395,16 +444,38 @@ public class ElevatorImpl extends Thread implements Elevator {
 		return elevatorID;
 	}
 	
+	public boolean isAvailableForRequest(Request request) {
+		return isAvailableForRequest(request, false);
+	}	
+	
+	public boolean isFull() {
+		synchronized(this.currentRider) {
+			if (this.currentRider.size() >= this.maxPassenger) {
+				return true;
+			}
+			return false;
+		}
+	}
+	
 	/**
 	 * Check if the elevator is available for the request.
-	 * @param requet
+	 * @param request
+	 * @param fromPendingList - 
+	 * 		  1) Add as initial request if no request in the elevator request list. 
+	 * 		  2) NextRequest.direction = InitialRequest.direction
+	 *  	  3) NextRequest.floor - InitialRequest.floor = InitialRequest.direction.
 	 * @return
+	 * @author Cheng Zhang
 	 */
-	public boolean isAvailableForRequest(Request request) {				
+	public boolean isAvailableForRequest(Request request, boolean fromPendingList) {		
+		if (this.isFull()){
+				return false;
+		}
+		
 		if (this.movingDirection==DIRECTION.NONE && this.requestList.size()==0) {//Idle
 			return true;
 		}
-		else {//Moving			
+		else {//Has some requests.			
 			if (this.requestList.size() > 0)
 			{				
 				DIRECTION eleDirection = this.movingDirection;
@@ -418,25 +489,33 @@ public class ElevatorImpl extends Thread implements Elevator {
 					return false;
 				}
 				
-				//Is the elevator moving towards the requesting floor?
+				//*For direct floor request: Is the elevator moving towards the requesting floor?
+				//*For pending list: 3) NextRequest.floor - InitialRequest.floor = InitialRequest.direction.
 				if ( (eleDirection == DIRECTION.UP && request.floor < this.currentFloor ) 
 				||   (eleDirection == DIRECTION.DOWN && request.floor > this.currentFloor) 
 				  ){
 					return false;
 				}
 				
-				//Is the elevator moving in the same direction requested by the new floor request?
-				if (eleDirection != request.direction) {
-					return false;
+				//*For direct floor request: Is the elevator moving in the same direction requested by the new floor request?
+				//*For pending list: Does not require this condition.
+				if (!fromPendingList) {
+					if (eleDirection != request.direction) {
+						return false;
+					}
 				}
 				
-				//Is the direction of the elevators current request the same as the direction of this request?
+				//*Is the direction of the elevators current request the same as the direction of this request?
+				//*For pending list: 2) NextRequest.direction = InitialRequest.direction
 				if (firstRequest.type == REQUEST_TYPE.FLOOR && firstRequest.direction != request.direction) {
 					return false;
 				}
 			}
 		}
 		
+		if (request.floor == this.lastPassedFloor) {// The requested floor has been passed(Door closed), although this.currentFloor is equal to request.floor.
+			return false;
+		}
 		return true;
 	}
 	
@@ -447,6 +526,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * 
 	 * @param request
 	 * @return
+	 * @author Cheng Zhang
 	 */
 	public long calculateWaitingTimeForRequest(Request request) {		
 		long traveling_time = Math.abs((distance(request) * this.timePerFloor));
@@ -461,8 +541,9 @@ public class ElevatorImpl extends Thread implements Elevator {
 	}
 	
 	/**
-	 * Operations when elevator arrives at a new floor.
+	 * Operations when the elevator arrives at a new floor.
 	 * @param currentFloor
+	 * @author Cheng Zhang
 	 */
 	public void onArriveAtFloor(int currentFloor) {
 		ArrayList<Floor> floorList = Building.getBuilding().getFloorsList();
@@ -481,14 +562,14 @@ public class ElevatorImpl extends Thread implements Elevator {
 		
 		String person_out = "";
 		String person_in = "";
-		int person_out_count = 0;
-		int person_in_count = 0;		
+		int person_in_count = 0;
+		
 		//Person out
 		synchronized(this.currentRider) {
+			int person_out_count = 0;	
 			for(int i=0;i < this.currentRider.size(); i++) {
 				Person person = this.currentRider.get(i); 
-				if (person.getToFloor() == currentFloor) {
-					//Person arrived at the destination floor.
+				if (person.getToFloor() == currentFloor) {//Person arrived at the destination floor.
 					person_out_count++;
 					person.endRiding();
 					currentRider.remove(i);
@@ -496,17 +577,18 @@ public class ElevatorImpl extends Thread implements Elevator {
 					floor.addPerson(person);
 				}
 			}
-		}
-		
-		if (person_out_count!=0) {
-			person_out = "Elevator " + this.elevatorID+ " releases "+person_out_count+" persons on floor "+currentFloor+".";
-			Toolset.println("info", person_out);
+			
+			if (person_out_count!=0) {
+				person_out = "Elevator " + this.elevatorID+ " releases "+person_out_count+" persons on floor "+currentFloor+".";
+				Toolset.println("info", person_out);
+			}
 		}
 		
 		//Person in
 		ArrayList<Person> waitingList = floor.getWaitingList();
         synchronized(waitingList) {
-			for(int i=0;i < waitingList.size(); i++) {
+			for(int i=0;i < waitingList.size(); i++) 
+			{
 			    Person person = waitingList.get(i);
 			    boolean willIn = false;
 			    if (this.requestList.size() == 0) {
@@ -527,15 +609,25 @@ public class ElevatorImpl extends Thread implements Elevator {
 			        }
 			    }
 			    
-			    //willIn = true;
 			    if (willIn) {
-			        //Add riderRequest
-			        person_in_count++;
-			        this.addRiderRequest(person.getToFloor());
-			        person.endWaiting();
-		           waitingList.remove(i);
-			        i--;
-			        currentRider.add(person);
+			    	synchronized(this.currentRider) 
+			    	{
+						if (this.isFull()) {//Elevator is full, then add person's request to pending list.
+							printElevatorIsFull(Request.createWithPerson(person));
+							Controller.getInstance().addPendingRequest(new Request(REQUEST_TYPE.FLOOR, person.getFromFloor(), person.direction()));
+							break;
+						}
+			            waitingList.remove(i);
+				        i--;
+				        this.currentRider.add(person);
+				        
+				        //Add riderRequest
+				        person_in_count++;
+				        this.addRiderRequest(person.getToFloor());				        
+				        person.endWaiting();
+
+			    	}
+			    	
 			    }
 			}
         }
@@ -546,10 +638,30 @@ public class ElevatorImpl extends Thread implements Elevator {
 		}
 	}
 	
+	/**
+	 * Elevator is already full, request will be added to pending list.
+	 * @param r - The new request that will be added to pending list.
+	 */
+	public void printElevatorIsFull(Request r) {
+		Toolset.println("info", String.format("Elevator %d is full, person's floor request is added to the pending list.(%s)", getElevatorID(), r.toInfoString() ));
+	}
+	
 	public boolean isIdle() {
 		boolean isIdle = false;
 		if (this.movingDirection==DIRECTION.NONE && this.requestList.size()==0)
 			isIdle = true;
 		return isIdle;
 	}
+	
+	public int getMaxFloor() {
+		return maxFloor;
+	}
+	
+	public int timePerFloor() {
+		return timePerFloor;
+	}
+	
+	public int timePerDoorOp() {
+		return timePerDoorOp;
+	}		
 }
