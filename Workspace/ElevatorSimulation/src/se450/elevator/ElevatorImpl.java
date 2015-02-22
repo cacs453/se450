@@ -185,7 +185,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 							if (!hasPrinted) { 			
 								this.lastPassedFloor = this.currentFloor;
 								
-								String directionFlag = (this.movingDirection==DIRECTION.UP) ? " ↑" : " ↓";
+								String directionFlag = (this.movingDirection==DIRECTION.UP) ? " ↑"  : " ↓";
 								String msg = "Elevator "+this.elevatorID+" moving"+directionFlag+" from Floor "+this.currentFloor+" to Floor ";
 								if (this.movingDirection==DIRECTION.UP)
 									msg = msg + (this.currentFloor+1);
@@ -592,7 +592,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 			}
 			
 			if (person_out_count!=0) {
-				person_out = "Elevator " + this.elevatorID+ " releases "+person_out_count+" persons on floor "+currentFloor+".";
+				person_out = "Elevator " + this.elevatorID+ " releases "+person_out_count+" persons on floor "+currentFloor+"."+"(Total passengers:"+this.currentRider.size()+")";
 				Toolset.println("info", person_out);
 			}
 		}
@@ -626,7 +626,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 			    	synchronized(this.currentRider) 
 			    	{
 						if (this.isFull()) {//Elevator is full, then add person's request to pending list.
-							printElevatorIsFull(Request.createWithPerson(person));
+							//printElevatorIsFull(Request.createWithPerson(person));
 							Controller.getInstance().addPendingRequest(new Request(REQUEST_TYPE.FLOOR, person.getFromFloor(), person.direction()));
 							break;
 						}
@@ -646,9 +646,11 @@ public class ElevatorImpl extends Thread implements Elevator {
         }
 
 		if (person_in_count != 0) {
-			person_in = "Elevator " + this.elevatorID+ " loads "+person_in_count+" persons on floor "+currentFloor+".";
+			person_in = "Elevator " + this.elevatorID+ " loads "+person_in_count+" persons on floor "+currentFloor+"."+"(Total passengers:"+this.currentRider.size()+")";
 			Toolset.println("info", person_in);
 		}
+		if (this.isFull())
+			printElevatorIsFull(null);
 	}
 	
 	/**
@@ -656,7 +658,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * @param r - The new request that will be added to pending list.
 	 */
 	public void printElevatorIsFull(Request r) {
-		Toolset.println("info", String.format("Elevator %d is full, person's floor request is added to the pending list.(%s)", getElevatorID(), r.toInfoString() ));
+		//Toolset.println("info", String.format("Elevator %d is full, person's floor request is added to the pending list.(%s)", getElevatorID(), r.toInfoString() ));
+		Toolset.println("info", String.format("Elevator %d is full, other persons' requests are added to the pending list.", getElevatorID() ));
 	}
 	
 	public boolean isIdle() {

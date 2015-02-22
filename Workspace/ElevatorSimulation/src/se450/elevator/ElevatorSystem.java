@@ -32,6 +32,9 @@ public class ElevatorSystem {
 				mapElevator.put(Integer.toString(ele.getElevatorID()), ele);
 				ele.start();
 	        }
+			
+			//start elevator system
+			building.getElevatorController().start();			
 
 			long lastTriggerTime = 0;
 			

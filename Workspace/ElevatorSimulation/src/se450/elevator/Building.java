@@ -104,7 +104,7 @@ public class Building {
      * @return
      */
     public Controller getElevatorController() {
-    	return controller;
+    	return Controller.getInstance();
     }
     
     
@@ -127,8 +127,7 @@ public class Building {
     	//Creating floors
     	for(int i = 0; i < configDTO.getFloorNumbers(); i++) {
 			floorList.add(FloorFactory.createFloor());
-		}
-    	Controller.getInstance().start();
+		}    	
     	Toolset.println("info", "Building created - "+ configDTO.getFloorNumbers()+" floors, "+configDTO.getElevatorNumbers()+" elevators");
     }
 }

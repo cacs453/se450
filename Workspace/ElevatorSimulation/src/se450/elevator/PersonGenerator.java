@@ -24,6 +24,12 @@ public class PersonGenerator implements Runnable {
 	private final ArrayList<Person> personList = new ArrayList<Person>();
 	private ArrayList<Floor> floorList = new ArrayList<Floor>();
 
+	/**
+	 * Constructor of PersonGenerator
+	 * @param floornumbers, floor numbers of the building
+	 * @param randompersonnumbers, the number how many person need to be created within one minute
+	 * @param simulationduration, the duration for the simulation, this generator will stop working once time exceeds
+	 */
 	public PersonGenerator(int floornumbers, int randompersonnumbers,
 			long simulationduration) {
 		this.floornumbers = floornumbers;
@@ -32,6 +38,9 @@ public class PersonGenerator implements Runnable {
 	}
 
 	@Override
+	/**
+	 * This thread runs to create person according the settings from configration file.
+	 */
 	public void run() {
 		running = true; // Set to false when you want to end processing
 
@@ -91,34 +100,71 @@ public class PersonGenerator implements Runnable {
 			if ((System.currentTimeMillis() - startTime) > simulationduration)
 				break;
 		}
+		/*try {
+			Thread.sleep(1000*120);
+			Toolset.println("info", "PersonGenerator -> Totally created("+ personList.size() + ") persons");
+		}
+		catch(InterruptedException ex)
+		{
+			Toolset.println("info", ex.getStackTrace().toString());
+		}*/
 		Toolset.println("info", "PersonGenerator -> Finished");
 	}
 
+	/**
+	 * Get random number(int) within the specified range
+	 * @param min, the minimum value(included)
+	 * @param max, the maximum value(included)
+	 * @return the random number(int)
+	 */
 	private int randomWithRange(int min, int max) {
 		int range = Math.abs(max - min) + 1;
 		return (int) (Math.random() * range) + (min <= max ? min : max);
 	}
 
+	/**
+	 * Get random number(double) within the specified range
+	 * @param min, the minimum value(included)
+	 * @param max, the maximum value(included)
+	 * @return the random number(double)
+	 */
 	private double randomWithRange(double min, double max) {
 		double range = Math.abs(max - min);
 		return (Math.random() * range) + (min <= max ? min : max);
 	}
 
+	/**
+	 * get timestamp for the current time
+	 * @return the string format of the current time
+	 */
 	private String getTimeStamp() {
 
 		return new Timestamp(System.currentTimeMillis()).toString();
 
 	}
-
+ 
+	/**
+	 * Get the personlist created by the Generator.
+	 * @return Generated personList 
+	 */
+	
 	public ArrayList<Person> getPersonList() {
 		return personList;
 	}
 
+	/**
+	 * Set the floor list so that the floor request can be created once person is generated
+	 * @param floorList
+	 */
 	public void setFloorList(ArrayList<Floor> floorList) {
 		this.floorList = floorList;
 	}
 
-	public void addPersonToFloor(PersonImpl person) {
+	/**
+	 * Add person to floor and create the floor request immediately
+	 * @param person, the person who is to be added to the specified floor
+	 */
+	private void addPersonToFloor(PersonImpl person) {
 		for(int i = 0; i < floorList.size(); i++) {
 			FloorImpl floor = (FloorImpl)floorList.get(i);
 			if (floor.getFloorId() == person.getFromFloor()) {				

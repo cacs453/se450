@@ -226,6 +226,9 @@ public class Controller extends Thread {
 		boolean success = false;
 		
 		ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
+		//if (elevatorList==null||elevatorList.isEmpty())
+		//	return false;
+		
 		ElevatorImpl victorForRequest = null;
 		
 		ArrayList<ElevatorImpl> availableElevators = new ArrayList<ElevatorImpl>();
@@ -238,6 +241,9 @@ public class Controller extends Thread {
 				availableElevators.add(ele);
 			}
 		}
+		
+		//if (availableElevators==null||availableElevators.isEmpty())
+		//	return false;
 		
 		// Get the best elevator to respond the request with shortest waiting time.
 		long shortestWaitingTime = Long.MAX_VALUE;
