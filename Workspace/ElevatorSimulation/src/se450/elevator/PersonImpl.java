@@ -64,16 +64,25 @@ public class PersonImpl implements Person {
 		return status;
 	}
 	
+	/**
+	 * Switch to waiting status and set waitStartTime.
+	 */
 	public void startWaiting() {
 		this.waitStartTime = Toolset.getDeltaTimeLong();
 		this.status = PERSON_STATUS.WAITING;
 	}
 	
+	/**
+	 * End waiting status and set waitEndTime.
+	 */
 	public void endWaiting() {
 		this.waitEndTime = Toolset.getDeltaTimeLong();
 		this.status = PERSON_STATUS.RIDDING;
 	}
 	
+	/**
+	 * End riding status and set rideEndTime.
+	 */
 	public void endRiding() {
 		this.rideEndTime = Toolset.getDeltaTimeLong();
 		this.status = PERSON_STATUS.ARRIVED;
@@ -87,6 +96,9 @@ public class PersonImpl implements Person {
 		return rideEndTime - waitEndTime;
 	}
 	
+	/**
+	 * Calculate the direction by the request of the person.
+	 */
 	public DIRECTION direction() {
 		DIRECTION direction;
 		if (this.toFloor == this.fromFloor) 

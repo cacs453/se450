@@ -227,19 +227,21 @@ public class ElevatorImpl extends Thread implements Elevator {
 	/**
 	 * We need to calculate the elevator intending direction when call distance(), if there is request in list, but the direction has not been set yet.
 	 * e.g. 
+	 * 		currentFloor = 1,
+	 * 	  
 	 * 		floorRequest1.floor = 6, floorRequest1.direction=UP;
-	 * 		floorRequest2.floor = 3, floorRequest1.direction=UP
+	 * 		floorRequest2.floor = 3, floorRequest1.direction=UP.
 	 * 
 	 * 		if interval between two requests is less than checkInterval, which is not necessarily guaranteed,  
-	 * 		Output will to be 6, 3 (Correct sequence is 3, 6).
+	 * 		Sequence in the request list will to be 6, 3 (Correct sequence is 3, 6).
 	 * 			 
 	 * The reason is that when floorRequest2 being added, the direction of the elevator is still DIRECTION.NONE, 
 	 * which leads to distance() function get the same value(Integer.MAX_VALUE) for floor 6 and floor3. 
 	 * 
 	 * This function is significant for elevator controller to make the right decision. 
 	 * 	
-	 * @param request
-	 * @return
+	 * @param request - The request that decides the elevator direction.
+	 * @return The elevator direction that calculated by the specific request.
 	 * @author Cheng Zhang
 	 */
 	protected DIRECTION caculate_direction_by_request(Request request) {
@@ -353,6 +355,11 @@ public class ElevatorImpl extends Thread implements Elevator {
 		return result;
 	}
 	
+	/**
+	 * Add the request to the request list.
+	 * 
+	 *  @param request - The request to be added.
+	 */
 	public void addRequest (Request request) throws InvalidParameterException {
 		if (request.type == REQUEST_TYPE.FLOOR) {			
 			this.addFloorRequest(request.floor, request.direction);
@@ -366,7 +373,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 	}
 	
 	/**
-	 * Notify after the request list has been changed, such that 'wait' function in run will stop waiting.  
+	 * Notify after the request list has been changed, such that 'wait' function in run function will stop waiting.  
+	 * 
 	 * @param checkRequestSize - true, then notify only when requestList.size() > 0.
 	 * 							 false, notify without checking the size of requestList.
 	 */
@@ -385,10 +393,19 @@ public class ElevatorImpl extends Thread implements Elevator {
 		}
 	}
 	
+	/**
+	 * Notify by timeout action.
+	 */
 	public void notifyForTimeOut()  {
 		notifyRequestList(false);
 	}
 	
+	/**
+	 * Add the floor request.
+	 * 
+	 * @param floor - The destination floor.
+	 * @param direction - The direction of the request.	 
+	 */
 	public void addFloorRequest (int floor, DIRECTION direction) throws InvalidParameterException{
 
 		if (floor<=0 || direction==DIRECTION.NONE || floor==1 && direction==DIRECTION.DOWN || floor==this.maxFloor && direction==DIRECTION.UP)
@@ -421,6 +438,11 @@ public class ElevatorImpl extends Thread implements Elevator {
 		notifyRequestList(true);
 	};
 
+	/**
+	 * Add the rider request.
+	 * 
+	 * @param floor - The destination floor of the rider request.
+	 */
 	public void addRiderRequest (int floor) throws InvalidParameterException{
 		synchronized(this.requestList) {		
 			if (floor<=0 || floor>this.maxFloor)
@@ -472,9 +494,6 @@ public class ElevatorImpl extends Thread implements Elevator {
 		return elevatorID;
 	}
 	
-	public boolean isAvailableForRequest(Request request) {
-		return isAvailableForRequest(request, false);
-	}	
 	
 	public boolean isFull() {
 		synchronized(this.currentRider) {
@@ -485,15 +504,20 @@ public class ElevatorImpl extends Thread implements Elevator {
 		}
 	}
 	
+	public boolean isAvailableForRequest(Request request) {
+		return isAvailableForRequest(request, false);
+	}	
+	
 	/**
 	 * Check if the elevator is available for the request.
 	 * 
-	 * @param request
+	 * @param request - The specific request.
 	 * @param fromPendingList - 
 	 * 		  1) Add as initial request if no request in the elevator request list. 
 	 * 		  2) NextRequest.direction = InitialRequest.direction
 	 *  	  3) NextRequest.floor - InitialRequest.floor = InitialRequest.direction.
-	 * @return
+	 * @return true  - This elevator can respond the request.
+	 * 		   false - This elevator can't respond the request.
 	 * @author Cheng Zhang
 	 */
 	public boolean isAvailableForRequest(Request request, boolean fromPendingList) {	
@@ -559,8 +583,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * 1) Traveling time: Associated with distance.
 	 * 2) Operation time: Open/close door for each stop.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request - The specific request.
+	 * @return The calculated waiting time.
 	 * @author Cheng Zhang
 	 */
 	public long calculateWaitingTimeForRequest(Request request) {		
@@ -577,7 +601,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 	
 	/**
 	 * Operations when the elevator arrives at a new floor.
-	 * @param currentFloor
+	 * 
+	 * @param currentFloor - The floor which the elevator has arrived at.
 	 * @author Cheng Zhang
 	 */
 	public void onArriveAtFloor(int currentFloor) {
@@ -684,6 +709,11 @@ public class ElevatorImpl extends Thread implements Elevator {
 		Toolset.println("info", String.format("Elevator %d is full, other persons' requests are added to the pending list.", getElevatorID() ));
 	}
 	
+	/**
+	 * Check if the elevator is idle.
+	 * @return  true  - The elevator is idle.
+	 * 			false - The elevator isn't idle.
+	 */
 	public boolean isIdle() {
 		boolean isIdle = false;
 		if (this.movingDirection==DIRECTION.NONE && this.requestList.size()==0)
@@ -691,6 +721,11 @@ public class ElevatorImpl extends Thread implements Elevator {
 		return isIdle;
 	}
 	
+	/**
+	 * Check if the elevator is timeout.
+	 * @return  true  - The elevator is timeout.
+	 * 			false - The elevator isn't timeout.
+	 */	
 	public boolean isTimeOut()
 	{
 		boolean result = false;
