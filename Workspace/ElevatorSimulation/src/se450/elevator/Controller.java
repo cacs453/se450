@@ -45,8 +45,10 @@ public class Controller extends Thread {
 	 * maxWaitingtime   <= maxFloor * (opTime+travelTime)*2 
 	 */
 	public void run() {
-		while(!this.halt) {			
-			try {
+		//while(!this.halt)
+		while(true)
+		{			
+			try {							
 				if (maxWaitingtimeLimit==-1) 
 				{
 					ElevatorImpl ele = (ElevatorImpl)Building.getBuilding().getElevatorList().get(0);
@@ -111,6 +113,20 @@ public class Controller extends Thread {
 						Toolset.println("info", status_string);
 						this.status_string = status_string;
 					}
+					
+					// Elevator thread will be blocked if invoke wait(), so check time-out status here for elevators.
+					ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
+					//synchronized(elevatorList) 
+					{
+						for (Elevator ele : elevatorList) {
+							if ( ((ElevatorImpl)ele).isTimeOut()) 
+							{
+								((ElevatorImpl)ele).notifyForTimeOut();
+							}
+						}
+					}
+					
+					//System.out.println("Sleep..");
 					Thread.sleep(threadInterval);
 				}
 			}
@@ -182,37 +198,7 @@ public class Controller extends Thread {
 			}
 		}		
 		return initialRequest;
-	}
-	
-	/**
-	 * Pre-process the pending list before distributing the pending requests to the idle elevators. 
-	 */
-	public void preprocess_pending_list() {
-		synchronized(this.pendingList) {
-			if (this.pendingList.size() ==0) {
-				boolean areAllElevatorsIdle = true;
-				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
-				synchronized(elevatorList) {
-					for (Elevator ele : elevatorList) {
-						if (!((ElevatorImpl)ele).isIdle()){
-							areAllElevatorsIdle =false;
-							break;
-						}				
-					}				
-				}
-				if (areAllElevatorsIdle) {
-					ArrayList<Person> personList = Building.getBuilding().getPersonList();
-					synchronized(personList) { 
-						for (Person person : personList) {
-							if (person.getStatus() == PERSON_STATUS.WAITING) {
-								this.addPendingRequest(Request.createWithPerson(person));
-							}
-						}
-					}					
-				}
-			}
-		}				
-	}
+	}	
 	
 	/**
 	 * Distribute pending requests to idle elevator. This function is called by idle elevator itself.
@@ -282,7 +268,7 @@ public class Controller extends Thread {
 		}
 		return success;
 	}
-	
+		
 	public void printPendingList() {
 		Toolset.println("info", "ElevatorController -> PendingList amount: "+pendingList.size());
 	}
@@ -307,6 +293,45 @@ public class Controller extends Thread {
 		}
 	}
 	
+	/**
+	 * Pre-process the pending list before distributing the pending requests to the idle elevators. 
+	 */
+	public void preprocess_pending_list() {
+		synchronized(this.pendingList) {
+			if (this.pendingList.size() ==0) {
+				boolean areAllElevatorsIdle = true;
+				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
+				synchronized(elevatorList) {
+					for (Elevator ele : elevatorList) {
+						if (!((ElevatorImpl)ele).isIdle()){
+							areAllElevatorsIdle =false;
+							break;
+						}				
+					}				
+				}
+				if (areAllElevatorsIdle) {
+					ArrayList<Person> personList = Building.getBuilding().getPersonList();
+					boolean hasNewPendingRequest=false;
+					synchronized(personList) { 
+						for (Person person : personList) {
+							if (person.getStatus() == PERSON_STATUS.WAITING) {
+								hasNewPendingRequest = true;
+								this.addPendingRequest(Request.createWithPerson(person));
+							}
+						}
+					}		
+					if (hasNewPendingRequest) {
+						synchronized(elevatorList) {
+							for (Elevator ele : elevatorList) {
+								((ElevatorImpl)ele).notifyRequestList(false);	
+							}				
+						}
+					}
+				}
+			}
+		}				
+	}
+		
 	public void addFloorRequest (int floor, DIRECTION direction) {
 		Request request = new Request(REQUEST_TYPE.FLOOR, floor, direction);				
 		if (!chooseElevatorForRequest(request)) {

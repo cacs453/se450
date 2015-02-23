@@ -20,7 +20,6 @@ public class ElevatorImpl extends Thread implements Elevator {
 	private int defaultFloor;
 	private int timeOut;
 	private long lastDoorCloseTime;
-	//private boolean isMoving; 
 	// The requested , although this.currentFloor .
 	private int lastPassedFloor = -1; // Indicates last floor being passed(Door closed), for the condition that the elevator is between two floors.
 	private DIRECTION movingDirection;
@@ -29,6 +28,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	private ArrayList<Request> requestList;
 	//private ElevatorButtonPanel buttonPanel;
 	private boolean halt;
+	private boolean isBlocking = false; // Thread is being blocked by wait(). 
 	//private long checkInterval = 100; //Sleep interval between each time elevator check its status
 	private long lastFloorPassingTime;
 	private boolean hasPrinted = false;
@@ -85,26 +85,31 @@ public class ElevatorImpl extends Thread implements Elevator {
 				synchronized(this.requestList) {								
 					if (this.movingDirection==DIRECTION.NONE) { //Idling
 						if (this.requestList.size()==0) { //No task
+							boolean shouldFetchPendingList = false; 
 							if (Toolset.getDeltaTimeLong()-this.lastDoorCloseTime>=this.timeOut) 
 							{ //Time out, go to default floor
 								if (this.currentFloor!=this.defaultFloor)
 									this.requestList.add(new Request(REQUEST_TYPE.TIMEOUT, this.defaultFloor, DIRECTION.NONE));
+								else 
+									shouldFetchPendingList = true;
 							}
 							else 
 							{ //Continue idling								
-								Toolset.println("debug", "Elevator "+this.elevatorID+" is idling.");
-								// Check pending list in Elevator Controller - Cheng						
-								Controller.getInstance().handlePendingListForIdleElevator(this);								
+								shouldFetchPendingList = true;
+								Toolset.println("debug", "Elevator "+this.elevatorID+" is idling.");							
 							}
 							
-					         try {// Wait for something to happen (request added or removed)
-				    				synchronized(this.requestList) {//wait must operate the object with synchronized lock.
-										if (this.requestList.size()==0) {
-											// Start waiting by multiple-thread concurrency method, it will respond in real time.
-											// wait(): Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() 
-											this.requestList.wait();
-										}
-									}            				    			
+							// Check pending list in Elevator Controller - Cheng	
+							if (shouldFetchPendingList)
+								Controller.getInstance().handlePendingListForIdleElevator(this);	
+							
+					         try {// Wait for something to happen (request added or removed). //synchronized(this.requestList) //wait must operate the object with synchronized lock.
+									if (this.requestList.size()==0) {// Maybe larger than 0 after invoking handlePendingListForIdleElevator.
+										// Start waiting by multiple-thread concurrency method, it will respond in real time.
+										// wait(): Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() 
+										this.isBlocking = true;
+										this.requestList.wait();
+									}									           				    			
 					            } catch (InterruptedException ex) {
 					                System.out.println("Interrupted! Going back to check for requests/wait");
 					            }
@@ -362,15 +367,26 @@ public class ElevatorImpl extends Thread implements Elevator {
 	
 	/**
 	 * Notify after the request list has been changed, such that 'wait' function in run will stop waiting.  
+	 * @param checkRequestSize - true, then notify only when requestList.size() > 0.
+	 * 							 false, notify without checking the size of requestList.
 	 */
-	public void notifyRequestList() 
+	public void notifyRequestList(boolean checkRequestSize) 
 	{
 		synchronized(this.requestList) {//notify must operate the object with synchronized lock.			
-			if (this.requestList.size() > 0) {
+			if (
+				(checkRequestSize && this.requestList.size() > 0)
+			|| !checkRequestSize		
+				) 
+			{
 				//notify(): Wakes up a single thread that is waiting on this object's monitor.
+				this.isBlocking = false;
 				this.requestList.notify();
 			}
 		}
+	}
+	
+	public void notifyForTimeOut()  {
+		notifyRequestList(false);
 	}
 	
 	public void addFloorRequest (int floor, DIRECTION direction) throws InvalidParameterException{
@@ -402,7 +418,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 			}
 		}
 		
-		notifyRequestList();
+		notifyRequestList(true);
 	};
 
 	public void addRiderRequest (int floor) throws InvalidParameterException{
@@ -439,13 +455,14 @@ public class ElevatorImpl extends Thread implements Elevator {
 			}
 		}
 		
-		notifyRequestList();
+		notifyRequestList(true);
 	};
 	
 	public void halt() {
 		this.halt = true;
 		synchronized(this.requestList) {
 			// Wake up all threads that waiting on this object's monitor.
+			this.isBlocking = false;
 			this.requestList.notifyAll();
 		}
 	}
@@ -470,6 +487,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	
 	/**
 	 * Check if the elevator is available for the request.
+	 * 
 	 * @param request
 	 * @param fromPendingList - 
 	 * 		  1) Add as initial request if no request in the elevator request list. 
@@ -493,6 +511,10 @@ public class ElevatorImpl extends Thread implements Elevator {
 					DIRECTION eleDirection = this.movingDirection;
 					Request firstRequest = this.requestList.get(0);
 	
+					if (firstRequest.type == REQUEST_TYPE.TIMEOUT) {//if current request is TIMEOUT, then unavailable for new request.
+						return false;
+					}
+					
 					if (eleDirection == DIRECTION.NONE ) {
 						eleDirection = caculate_direction_by_request(firstRequest);
 					}
@@ -669,6 +691,22 @@ public class ElevatorImpl extends Thread implements Elevator {
 		return isIdle;
 	}
 	
+	public boolean isTimeOut()
+	{
+		boolean result = false;
+		if (this.movingDirection==DIRECTION.NONE) {
+			//if (this.requestList.size()==0) //requestList is blocked by wait() when requestList.size is equal to 0.
+			if (this.isBlocking) {
+				if (Toolset.getDeltaTimeLong()-this.lastDoorCloseTime>=this.timeOut) { 
+					if (this.currentFloor!=this.defaultFloor){
+						result = true;
+					}
+				}
+			}
+		}		
+		return	result;
+	}
+		
 	public int getMaxFloor() {
 		return maxFloor;
 	}
@@ -683,6 +721,5 @@ public class ElevatorImpl extends Thread implements Elevator {
 	
 	public DIRECTION lastFloorRequestDirection() {
 		return lastFloorRequestDirection;
-	}
-	
+	}	
 }
