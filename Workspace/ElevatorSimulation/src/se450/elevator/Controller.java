@@ -180,9 +180,38 @@ public class Controller extends Thread {
 				
 				initialRequest = this.pendingList.get(selectedIndex);
 			}
-		}
-		
+		}		
 		return initialRequest;
+	}
+	
+	/**
+	 * Pre-process the pending list before distributing the pending requests to the idle elevators. 
+	 */
+	public void preprocess_pending_list() {
+		synchronized(this.pendingList) {
+			if (this.pendingList.size() ==0) {
+				boolean areAllElevatorsIdle = true;
+				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
+				synchronized(elevatorList) {
+					for (Elevator ele : elevatorList) {
+						if (!((ElevatorImpl)ele).isIdle()){
+							areAllElevatorsIdle =false;
+							break;
+						}				
+					}				
+				}
+				if (areAllElevatorsIdle) {
+					ArrayList<Person> personList = Building.getBuilding().getPersonList();
+					synchronized(personList) { 
+						for (Person person : personList) {
+							if (person.getStatus() == PERSON_STATUS.WAITING) {
+								this.addPendingRequest(Request.createWithPerson(person));
+							}
+						}
+					}					
+				}
+			}
+		}				
 	}
 	
 	/**
@@ -193,8 +222,8 @@ public class Controller extends Thread {
 	public boolean handlePendingListForIdleElevator(ElevatorImpl elevator) throws InvalidParameterException {
 		if (!elevator.isIdle()) {
 			throw new InvalidParameterException("The elevator is not idle!");
-		}		
-		
+		}				
+		preprocess_pending_list();		
 		boolean obtainedPendingRequest = false;
 		synchronized(pendingList) {			
 			Request initialRequest = getInitialRequestForElevator(elevator);
@@ -223,16 +252,12 @@ public class Controller extends Thread {
 	 * 		   false - No elevator is available.
 	 */
 	public boolean chooseElevatorForRequest(Request request) {
-		boolean success = false;
-		
+		boolean success = false;		
 		ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
 		if (elevatorList==null)
-			return false;
-		
-		ElevatorImpl victorForRequest = null;
-		
-		ArrayList<ElevatorImpl> availableElevators = new ArrayList<ElevatorImpl>();
-		
+			return false;		
+		ElevatorImpl victorForRequest = null;		
+		ArrayList<ElevatorImpl> availableElevators = new ArrayList<ElevatorImpl>();		
 		// Get available elevators.
 		for (int i = 0; i < elevatorList.size(); i++) 
 		{
@@ -241,28 +266,20 @@ public class Controller extends Thread {
 				availableElevators.add(ele);
 			}
 		}
-
 		// Get the best elevator to respond the request with shortest waiting time.
 		long shortestWaitingTime = Long.MAX_VALUE;
 		for (int i = 0; i < availableElevators.size(); i++) {
-//			if(i==0) {
-//				Toolset.println("info", "ElevatorController -> CompareWaitingTime for RequestType:"+
-//						request.type+" RequestFloor:"+request.floor+" Direction:"+request.direction+
-//						"");
-//			}
 			ElevatorImpl ele = availableElevators.get(i);
 			long waitingTime = ele.calculateWaitingTimeForRequest(request);
 			if (waitingTime < shortestWaitingTime) {
 				shortestWaitingTime = waitingTime;
 				victorForRequest = ele;
 			}				
-		}
-		
+		}		
 		if (victorForRequest != null) {
 			victorForRequest.addRequest(request);
 			success = true;
 		}
-
 		return success;
 	}
 	
@@ -282,8 +299,7 @@ public class Controller extends Thread {
 					alreadyExists = true;
 					break;
 				}					
-			}
-			
+			}			
 			if (!alreadyExists) {
 				pendingList.add(request);
 				printPendingList();

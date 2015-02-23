@@ -59,8 +59,8 @@ public class ElevatorImpl extends Thread implements Elevator {
 		this.timePerFloor = timePerFloor;
 		this.timePerDoorOp = timePerDoorOp;
 		this.defaultFloor = defaultFloor;
-		//this.timeOut = timeOut;
-		this.timeOut = Integer.MAX_VALUE; // For test mode.
+		this.timeOut = timeOut;
+		//this.timeOut = Integer.MAX_VALUE; // For test mode.
 
 		this.lastDoorCloseTime = Toolset.getDeltaTimeLong();
 		//this.isMoving = false;
@@ -100,7 +100,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 					         try {// Wait for something to happen (request added or removed)
 				    				synchronized(this.requestList) {//wait must operate the object with synchronized lock.
 										if (this.requestList.size()==0) {
-											// Start waiting by multiple-thread concurrency method, will respond in real time compared with sleeping.
+											// Start waiting by multiple-thread concurrency method, it will respond in real time.
 											// wait(): Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() 
 											this.requestList.wait();
 										}
@@ -659,7 +659,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 */
 	public void printElevatorIsFull(Request r) {
 		//Toolset.println("info", String.format("Elevator %d is full, person's floor request is added to the pending list.(%s)", getElevatorID(), r.toInfoString() ));
-		Toolset.println("info", String.format("Elevator %d is full, current persons' requests are added to the pending list.", getElevatorID() ));
+		Toolset.println("info", String.format("Elevator %d is full, other persons' requests are added to the pending list.", getElevatorID() ));
 	}
 	
 	public boolean isIdle() {
