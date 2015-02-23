@@ -185,7 +185,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 							if (!hasPrinted) { 			
 								this.lastPassedFloor = this.currentFloor;
 								
-								String directionFlag = (this.movingDirection==DIRECTION.UP) ? " ↑"  : " ↓";
+								String directionFlag = (this.movingDirection==DIRECTION.UP) ? " ^"  : " v";
 								String msg = "Elevator "+this.elevatorID+" moving"+directionFlag+" from Floor "+this.currentFloor+" to Floor ";
 								if (this.movingDirection==DIRECTION.UP)
 									msg = msg + (this.currentFloor+1);
@@ -267,7 +267,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 		for (int i=0; i<requestList.size(); i++) {
 			Request r = requestList.get(i);
 			if (r.type==REQUEST_TYPE.FLOOR)
-				fr = String.format("%s%d%c%s", fr,  r.floor, r.direction == DIRECTION.UP ? '↑' : '↓', i == requestList.size()-1? "" : ", ");
+				fr = String.format("%s%d%c%s", fr,  r.floor, r.direction == DIRECTION.UP ? '^' : 'v', i == requestList.size()-1? "" : ", ");
 			else if (r.type==REQUEST_TYPE.RIDER)
 				rr = rr + r.floor + ", ";
 		}
@@ -659,7 +659,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 */
 	public void printElevatorIsFull(Request r) {
 		//Toolset.println("info", String.format("Elevator %d is full, person's floor request is added to the pending list.(%s)", getElevatorID(), r.toInfoString() ));
-		Toolset.println("info", String.format("Elevator %d is full, other persons' requests are added to the pending list.", getElevatorID() ));
+		Toolset.println("info", String.format("Elevator %d is full, current persons' requests are added to the pending list.", getElevatorID() ));
 	}
 	
 	public boolean isIdle() {

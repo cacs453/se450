@@ -37,7 +37,7 @@ public class Request {
 	}
 	
 	public String toInfoString() {
-		String str = String.format("%d%s", this.floor, this.direction==DIRECTION.UP ? "¡ü" : "¡ý");
+		String str = String.format("%d%s", this.floor, this.direction==DIRECTION.UP ? "^" : "v");
 		return str;
 	}
 }

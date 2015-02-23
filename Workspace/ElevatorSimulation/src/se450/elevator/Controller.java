@@ -226,8 +226,8 @@ public class Controller extends Thread {
 		boolean success = false;
 		
 		ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
-		//if (elevatorList==null||elevatorList.isEmpty())
-		//	return false;
+		if (elevatorList==null)
+			return false;
 		
 		ElevatorImpl victorForRequest = null;
 		
@@ -241,10 +241,7 @@ public class Controller extends Thread {
 				availableElevators.add(ele);
 			}
 		}
-		
-		//if (availableElevators==null||availableElevators.isEmpty())
-		//	return false;
-		
+
 		// Get the best elevator to respond the request with shortest waiting time.
 		long shortestWaitingTime = Long.MAX_VALUE;
 		for (int i = 0; i < availableElevators.size(); i++) {
@@ -284,8 +281,7 @@ public class Controller extends Thread {
 				if (r.isEqualTo(request)) {
 					alreadyExists = true;
 					break;
-				}
-					
+				}					
 			}
 			
 			if (!alreadyExists) {
@@ -296,8 +292,7 @@ public class Controller extends Thread {
 	}
 	
 	public void addFloorRequest (int floor, DIRECTION direction) {
-		Request request = new Request(REQUEST_TYPE.FLOOR, floor, direction);
-				
+		Request request = new Request(REQUEST_TYPE.FLOOR, floor, direction);				
 		if (!chooseElevatorForRequest(request)) {
 			// No elevator is available.
 			addPendingRequest(request);
