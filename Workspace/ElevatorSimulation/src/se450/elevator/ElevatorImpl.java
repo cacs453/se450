@@ -378,7 +378,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	/**
 	 * Notify after the request list has been changed, such that 'wait' function in run function will stop waiting.  
 	 * 
-	 * @param checkRequestSize - true, then notify only when requestList.size() > 0.
+	 * @param checkRequestSize - true, then notify only when requestList.size() is larger than 0.
 	 * 							 false, notify without checking the size of requestList.
 	 */
 	public void notifyRequestList(boolean checkRequestSize) 

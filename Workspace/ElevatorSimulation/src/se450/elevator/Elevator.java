@@ -18,7 +18,6 @@ public interface Elevator {
 	 * 
 	 * @param floor - Floor number in int format from 1 to MaxFloor.
 	 * @param direction - Emu as in UP, DOWN. Can't be NONE here.
-	 * @see #panelPressed(int)
 	 */
 	public void addFloorRequest (int floor, DIRECTION direction);
 	
@@ -26,8 +25,7 @@ public interface Elevator {
 	 * This method is the interface for Person to send a command to the elevator.
 	 * Means someone pressed a floor number button inside the elevator, then elevator will decided whether or not respond.
 	 * 
-	 * @param floorbutton - Floor number in int format from 1 to MaxFloor.
-	 * @see #addFloorToTaskList(int)
+	 * @param floor - Floor number in int format from 1 to MaxFloor.
 	 */
 	public void addRiderRequest (int floor);
 	

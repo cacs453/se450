@@ -44,8 +44,7 @@ public interface Person {
 	 */
 	public void startWaiting();
 	/**
-	 * End waiting.
-	 * @param elevatorIdIn - The elevator id which the person is taking.
+	 * End waiting.	 
 	 */
 	public void endWaiting();
 	

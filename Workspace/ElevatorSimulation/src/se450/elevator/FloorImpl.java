@@ -38,7 +38,7 @@ public class FloorImpl implements Floor {
 	
 	/**
 	 * Add the persons to this floor during the building initialization.
-	 * @param personList
+	 * @param person
 	 */
 	public void addPerson (Person person) {
 		synchronized (personList) {
@@ -48,7 +48,7 @@ public class FloorImpl implements Floor {
 	
 	/**
 	 * Add the persons to this floor in bulk mode
-	 * @param person list
+	 * @param persons
 	 */
 	public void addPersonBulk (ArrayList<Person> persons) {
 		synchronized (personList) {
@@ -60,7 +60,7 @@ public class FloorImpl implements Floor {
 	
 	/**
 	 * Remove the person from this floor if he/she gets in the elevator
-	 * @param personList
+	 * @param removePersonList
 	 */
 	public void removePerson (ArrayList<Person> removePersonList) {
 		synchronized (personList) {

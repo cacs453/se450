@@ -11,7 +11,7 @@ public interface Floor {
 
 	/**
 	 * Add the persons to this floor during the building initialization.
-	 * @param personList
+	 * @param person
 	 */
 	public void addPerson (Person person);
 	

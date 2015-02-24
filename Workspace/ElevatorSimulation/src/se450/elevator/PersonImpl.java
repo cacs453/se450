@@ -29,7 +29,6 @@ public class PersonImpl implements Person {
 	 * @param fromFloor - The floor where the person was from.
 	 * @param toFloor - The floor where the person will go to.
 	 * @param triggerTime - The preset time when the person will trigger the elevator button.
-	 * @return Person instance.
 	 */
 	public PersonImpl(int id, int fromFloor, int toFloor, long triggerTime) {
 		this.id = id;
