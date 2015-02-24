@@ -103,13 +103,16 @@ public class ElevatorImpl extends Thread implements Elevator {
 							if (shouldFetchPendingList)
 								Controller.getInstance().handlePendingListForIdleElevator(this);	
 							
-					         try {// Wait for something to happen (request added or removed). //synchronized(this.requestList) //wait must operate the object with synchronized lock.
-									if (this.requestList.size()==0) {// Maybe larger than 0 after invoking handlePendingListForIdleElevator.
-										// Start waiting by multiple-thread concurrency method, it will respond in real time.
-										// wait(): Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() 
-										this.isBlocking = true;
-										this.requestList.wait();
-									}									           				    			
+					         try {// Wait for something to happen (request added or removed). 
+						        	 synchronized(this.requestList) //wait must operate the object with synchronized lock.
+						        	 {
+										if (this.requestList.size()==0) {// Maybe larger than 0 after invoking handlePendingListForIdleElevator.
+											// Start waiting by multiple-thread concurrency method, it will respond in real time.
+											// wait(): Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() 
+											this.isBlocking = true;											
+											this.requestList.wait();
+										}		
+						        	 }
 					            } catch (InterruptedException ex) {
 					                System.out.println("Interrupted! Going back to check for requests/wait");
 					            }

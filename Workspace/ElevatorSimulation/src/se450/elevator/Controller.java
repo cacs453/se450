@@ -17,7 +17,7 @@ public class Controller extends Thread {
 	private static Controller instance = null;
 	private ArrayList<Request> pendingList = new ArrayList<Request>(); 
 	private boolean halt = false;
-	private long threadInterval = 100;
+	private long threadInterval = 1000; //100
 	String status_string = "";
 	private static double  maxWaitingtimeLimit = -1;
 	
@@ -38,7 +38,7 @@ public class Controller extends Thread {
 	}		
 	
 	/**
-	 * Search initial request in the pending list, which has the same direction as the first request, and is closest to the start floor of that direction.
+	 * Search the initial request in the pending list, which has the same direction as the first request, and is closest to the start floor of that direction.
 	 * So that the elevator will respond all pending requests in the same direction.	
 	 * 	 UP		: Closest to 1 floor.
 	 *	 DOWN	: Closest to max floor. 
@@ -173,39 +173,46 @@ public class Controller extends Thread {
 	 * Pre-process the pending list before dispatching the pending requests to the idle elevators. 
 	 */
 	public void preprocess_pending_list() {
-		synchronized(this.pendingList) {
-			if (this.pendingList.size() ==0) {
-				boolean areAllElevatorsIdle = true;
-				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
-				synchronized(elevatorList) {
-					for (Elevator ele : elevatorList) {
-						if (!((ElevatorImpl)ele).isIdle()){
-							areAllElevatorsIdle =false;
-							break;
-						}				
-					}				
-				}
-				if (areAllElevatorsIdle) {
-					ArrayList<Person> personList = Building.getBuilding().getPersonList();
-					boolean hasNewPendingRequest=false;
-					synchronized(personList) { 
-						for (Person person : personList) {
-							if (person.getStatus() == PERSON_STATUS.WAITING) {
-								hasNewPendingRequest = true;
-								this.addPendingRequest(Request.createWithPerson(person));
-							}
-						}
-					}		
-					if (hasNewPendingRequest) {
-						synchronized(elevatorList) {
-							for (Elevator ele : elevatorList) {
-								((ElevatorImpl)ele).notifyRequestList(false);	
-							}				
-						}
-					}
-				}
-			}
-		}				
+//		boolean pendingListIsEmpty = false;
+//		synchronized(this.pendingList) {
+//			if (this.pendingList.size() ==0) {
+//				pendingListIsEmpty = true;
+//			}
+//		}
+//		
+//		if (pendingListIsEmpty) {
+//				boolean areAllElevatorsIdle = true;
+//				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
+//				synchronized(elevatorList) {
+//					for (Elevator ele : elevatorList) {
+//						if (!((ElevatorImpl)ele).isIdle()){
+//							areAllElevatorsIdle =false;
+//							break;
+//						}				
+//					}				
+//				}
+//		
+//				if (areAllElevatorsIdle) {					
+//					ArrayList<Person> personList = Building.getBuilding().getPersonList();
+//					boolean hasNewPendingRequest=false;
+//					synchronized(personList) { 
+//						for (Person person : personList) {
+//							if (person.getStatus() == PERSON_STATUS.WAITING) {
+//								hasNewPendingRequest = true;
+//								this.addPendingRequest(Request.createWithPerson(person));
+//							}
+//						}
+//					}		
+//					
+//					if (hasNewPendingRequest) {
+//						synchronized(elevatorList) {
+//							for (Elevator ele : elevatorList) {
+//								((ElevatorImpl)ele).notifyRequestList(false);	
+//							}				
+//						}
+//					}
+//				}
+//			}			
 	}
 		
 	/**
@@ -306,8 +313,9 @@ public class Controller extends Thread {
 							}
 						}
 					}					
-					Thread.sleep(threadInterval);
 				}
+				
+				Thread.sleep(threadInterval);
 			}
 			catch(Exception e) {
 				e.printStackTrace();
