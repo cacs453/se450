@@ -47,6 +47,18 @@ public class FloorImpl implements Floor {
 	}
 	
 	/**
+	 * Add the persons to this floor in bulk mode
+	 * @param person list
+	 */
+	public void addPersonBulk (ArrayList<Person> persons) {
+		synchronized (personList) {
+			//System.out.println("before->"+personList.size());
+			this.personList.addAll(persons);
+			//System.out.println("after->"+personList.size());
+		}
+	}
+	
+	/**
 	 * Remove the person from this floor if he/she gets in the elevator
 	 * @param personList
 	 */
@@ -97,6 +109,38 @@ public class FloorImpl implements Floor {
 		callbox.pressButton(getDirection(person));
 	}	
 	
+	/**
+	 * Set call box at once for multiple persons
+	 * @param persons
+	 */
+	public void setCallBoxBulk(ArrayList<Person> persons) {
+		boolean upPressed = false;
+		boolean downPressed = false;
+		
+		for(int i=0; i<persons.size(); i++) {
+			//callbox.pressButton(getDirection((PersonImpl)persons.get(i)));
+			PersonImpl person = (PersonImpl)persons.get(i);
+			person.startWaiting();
+			if (getDirection(person) == DIRECTION.UP) {
+				if(!upPressed) {
+					callbox.pressButton(DIRECTION.UP);
+					upPressed = true;
+				}
+			}
+			else {
+				if(!downPressed) {
+					callbox.pressButton(DIRECTION.DOWN);
+					downPressed = true;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Get person's direction
+	 * @param person
+	 * @return
+	 */
 	private DIRECTION getDirection(Person person) {
 		if (person.getToFloor() > person.getFromFloor())
 			return DIRECTION.UP;
