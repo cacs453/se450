@@ -108,9 +108,11 @@ public class Controller extends Thread {
 		if (!elevator.isIdle()) {
 			throw new InvalidParameterException("The elevator is not idle!");
 		}				
+		
 		preprocess_pending_list();		
 		boolean obtainedPendingRequest = false;
 		synchronized(pendingList) {			
+			//Toolset.println("info", String.format("Elevator %d is idle, attempts to handle pending list (size = %d).", elevator.getElevatorID(), this.pendingList.size()));			
 			Request initialRequest = getInitialRequestForElevator(elevator);
 			if (initialRequest != null) {
 				elevator.addRequest(initialRequest);
@@ -173,46 +175,51 @@ public class Controller extends Thread {
 	 * Pre-process the pending list before dispatching the pending requests to the idle elevators. 
 	 */
 	public void preprocess_pending_list() {
-//		boolean pendingListIsEmpty = false;
-//		synchronized(this.pendingList) {
-//			if (this.pendingList.size() ==0) {
-//				pendingListIsEmpty = true;
-//			}
-//		}
-//		
-//		if (pendingListIsEmpty) {
-//				boolean areAllElevatorsIdle = true;
-//				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
-//				synchronized(elevatorList) {
-//					for (Elevator ele : elevatorList) {
-//						if (!((ElevatorImpl)ele).isIdle()){
-//							areAllElevatorsIdle =false;
-//							break;
-//						}				
-//					}				
-//				}
-//		
-//				if (areAllElevatorsIdle) {					
-//					ArrayList<Person> personList = Building.getBuilding().getPersonList();
-//					boolean hasNewPendingRequest=false;
-//					synchronized(personList) { 
-//						for (Person person : personList) {
-//							if (person.getStatus() == PERSON_STATUS.WAITING) {
-//								hasNewPendingRequest = true;
-//								this.addPendingRequest(Request.createWithPerson(person));
-//							}
-//						}
-//					}		
-//					
-//					if (hasNewPendingRequest) {
-//						synchronized(elevatorList) {
-//							for (Elevator ele : elevatorList) {
-//								((ElevatorImpl)ele).notifyRequestList(false);	
-//							}				
-//						}
-//					}
-//				}
-//			}			
+		//System.out.println("Preprocess pending list.");
+		boolean pendingListIsEmpty = false;
+		synchronized(this.pendingList) {
+			if (this.pendingList.size() ==0) {
+				pendingListIsEmpty = true;
+			}
+		}
+		
+		if (pendingListIsEmpty) {
+				boolean areAllElevatorsIdle = true;
+				ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
+				synchronized(elevatorList) {
+					for (Elevator ele : elevatorList) {
+						if (!((ElevatorImpl)ele).isIdle()){
+							areAllElevatorsIdle =false;
+							break;
+						}				
+					}				
+				}
+		
+				if (areAllElevatorsIdle) {					
+					ArrayList<Person> personList = Building.getBuilding().getPersonList();
+					boolean hasNewPendingRequest=false;
+					synchronized(personList) 
+					{ 
+						for (Person person : personList) 
+						{
+							if (person.getStatus() == PERSON_STATUS.WAITING) {
+								hasNewPendingRequest = true;
+								this.addPendingRequest(Request.createWithPerson(person));
+							}
+						}
+					}		
+					
+					if (hasNewPendingRequest) {
+						synchronized(elevatorList) {
+							for (Elevator ele : elevatorList) {
+								((ElevatorImpl)ele).notifyRequestList(false);	
+							}				
+						}
+					}
+				}
+			}			
+		
+		//System.out.println("Preprocess pending list completed.");
 	}
 		
 	/**
