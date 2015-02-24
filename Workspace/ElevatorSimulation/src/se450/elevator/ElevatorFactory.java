@@ -17,7 +17,7 @@ public class ElevatorFactory {
 	 * @param timePerFloor - How long does this elevator spend per go UP/DOWN 1 floor. Millisecond, int. 
 	 * @param timePerDoorOp - How long does this elevator spend per door open and then close. Millisecond, int. 
 	 * @param defaultFloor - Default floor of this elevator, int.
-	 * @param timeOut - If this elevator idles longer than this time, it will go to the {@link #defaultFloor}. Millisecond, int.
+	 * @param timeOut - If this elevator idles longer than this time, it will go to the defaultFloor. Millisecond, int.
 	 * @return - An instance of an newly created elevator.
 	 */
 	public static ElevatorImpl createElevator(int maxPassenger, int maxFloor, int timePerFloor, int timePerDoorOp, int defaultFloor, int timeOut) {
