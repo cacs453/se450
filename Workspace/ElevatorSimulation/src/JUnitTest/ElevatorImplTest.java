@@ -48,10 +48,10 @@ public class ElevatorImplTest extends TestCase {
 		e1.addFloorRequest(14, DIRECTION.UP);
 		e1.addFloorRequest(12, DIRECTION.UP);				
 		String requestList = e1.requestList_toString();
-		System.out.println(requestList);
+		System.out.println("testAddFloorRequest:"+requestList);
 		e1.halt();		
 		assertEquals(
-				"[Floor Requests: 11, 12, 14, ] [Rider Requests: ]", 
+				"[Floor Requests: 11^, 12^, 14^ ] [Rider Requests: ]", 
 				requestList);
 	}
 	
@@ -64,10 +64,10 @@ public class ElevatorImplTest extends TestCase {
 		e1.addRiderRequest(14);
 		e1.addRiderRequest(12);				
 		String requestList = e1.requestList_toString();
-		System.out.println(requestList);
+		System.out.println("testAddRiderRequest:" + requestList);
 		e1.halt();		
 		assertEquals(
-				"[Floor Requests: ] [Rider Requests: 11, 12, 14, ]", 
+				"[Floor Requests:  ] [Rider Requests: 11, 12, 14, ]", 
 				requestList);
 	}
 	
@@ -80,10 +80,10 @@ public class ElevatorImplTest extends TestCase {
 		e1.addFloorRequest(14, DIRECTION.UP);
 		e1.addFloorRequest(12, DIRECTION.UP);				
 		String requestList = e1.requestList_toString();
-		System.out.println(requestList);
+		System.out.println("testRequestList_toString:"+requestList);
 		e1.halt();		
 		assertEquals(
-				"[Floor Requests: 11, 12, 14, ] [Rider Requests: ]", 
+				"[Floor Requests: 11^, 12^, 14^ ] [Rider Requests: ]", 
 				requestList);
 	}
 	
@@ -105,15 +105,15 @@ public class ElevatorImplTest extends TestCase {
 		e1.start();		
 		e1.addFloorRequest(11, DIRECTION.UP);
 		Thread.sleep(600);				
-		assertEquals(true, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 11, DIRECTION.UP), 
+		assertEquals(1, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 11, DIRECTION.UP), 
 									   new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.UP)));		
-		assertEquals(false, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.UP), 
+		assertEquals(-1, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.UP), 
 				   new Request(REQUEST_TYPE.FLOOR, 11, DIRECTION.UP)));
 
-		assertEquals(true, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.UP), 
+		assertEquals(1, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.UP), 
 				   new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.DOWN)));
 
-		assertEquals(true, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 15, DIRECTION.UP), 
+		assertEquals(1, e1.isNearer(new Request(REQUEST_TYPE.FLOOR, 15, DIRECTION.UP), 
 				   new Request(REQUEST_TYPE.FLOOR, 12, DIRECTION.DOWN)));
 		e1.halt();	
 	}

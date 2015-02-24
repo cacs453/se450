@@ -358,6 +358,11 @@ public class Controller extends Thread {
 		Toolset.println("info", "ElevatorController -> PendingList amount: "+pendingList.size());
 	}
 	
+	public ArrayList<Request> getPendingList() {
+		return this.pendingList;
+	}
+	
+	
 	/**
 	 * Get the algorithm strategy of the elevator controller.
 	 * 
