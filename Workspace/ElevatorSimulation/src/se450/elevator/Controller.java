@@ -20,7 +20,8 @@ public class Controller extends Thread {
 	private long threadInterval = 1000; //100
 	String status_string = "";
 	private static double  maxWaitingtimeLimit = -1;
-	
+	private boolean isPGFinished = false;
+
 	/**
 	 * Get the singleton instance of ElevatorController.
 	 * 
@@ -309,6 +310,13 @@ public class Controller extends Thread {
 						this.status_string = status_string;
 					}
 					
+					//Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at there destination floors.
+					if (this.isPGFinished) {
+						if (total == arrivedCount) {
+							onAllTasksFinished();
+						}
+					}
+					
 					// Elevator thread will be blocked if invoke wait(), so check time-out status here for elevators.
 					ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
 					//synchronized(elevatorList) 
@@ -386,5 +394,18 @@ public class Controller extends Thread {
 	 */	
 	public void setStrategy(STRATEGY_TYPE strategy) {
 		this.strategy = strategy;
+	}	
+
+	/**
+	 * Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at there destination floors.
+	 */
+	public void onAllTasksFinished() {
+	}
+
+	/**
+	 * Be notified when personGenerator stops.
+	 */
+	public void onPGFinished() {
+		this.isPGFinished = true;
 	}	
 }
