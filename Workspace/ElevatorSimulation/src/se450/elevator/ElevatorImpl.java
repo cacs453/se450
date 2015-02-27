@@ -99,7 +99,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 								Toolset.println("debug", "Elevator "+this.elevatorID+" is idling.");							
 							}
 							
-							// Check pending list in Elevator Controller - Cheng	
+							// Check pending list in Elevator Controller
 							if (shouldFetchPendingList)
 								Controller.getInstance().handlePendingListForIdleElevator(this);	
 							
@@ -245,7 +245,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * 	
 	 * @param request - The request that decides the elevator direction.
 	 * @return The elevator direction that calculated by the specific request.
-	 * @author Cheng Zhang
+	 * 
 	 */
 	protected DIRECTION caculate_direction_by_request(Request request) {
 		DIRECTION direction = DIRECTION.NONE;		
@@ -468,7 +468,7 @@ public class ElevatorImpl extends Thread implements Elevator {
 						Request request2 = this.requestList.get(i);
 						int isNearer = isNearer(request, request2);
 						if (isNearer == 0 && request.type == request2.type) {
-							//Ignore the same request. - cheng
+							//Ignore the same request. 
 							alreadyExists = true;
 						}
 						else if (isNearer == 1)
@@ -521,7 +521,6 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 *  	  3) NextRequest.floor - InitialRequest.floor = InitialRequest.direction.
 	 * @return true  - This elevator can respond the request.
 	 * 		   false - This elevator can't respond the request.
-	 * @author Cheng Zhang
 	 */
 	public boolean isAvailableForRequest(Request request, boolean fromPendingList) {	
 		synchronized(this.requestList) {
@@ -588,7 +587,6 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * 
 	 * @param request - The specific request.
 	 * @return The calculated waiting time.
-	 * @author Cheng Zhang
 	 */
 	public long calculateWaitingTimeForRequest(Request request) {		
 		long traveling_time = Math.abs((distance(request) * this.timePerFloor));
@@ -606,7 +604,6 @@ public class ElevatorImpl extends Thread implements Elevator {
 	 * Operations when the elevator arrives at a new floor.
 	 * 
 	 * @param currentFloor - The floor which the elevator has arrived at.
-	 * @author Cheng Zhang
 	 */
 	public void onArriveAtFloor(int currentFloor) {
 		ArrayList<Floor> floorList = Building.getBuilding().getFloorsList();
@@ -745,6 +742,21 @@ public class ElevatorImpl extends Thread implements Elevator {
 		return	result;
 	}
 		
+	/**
+	 * The elevator has finished all tasks and back to default floor.
+	 * @return
+	 */
+	public boolean hasFinishedAllTasks() {
+		boolean ret = false;		
+		if (this.movingDirection==DIRECTION.NONE 
+		 && this.isBlocking
+	   	 && this.currentFloor == defaultFloor
+	   	 ) {
+			ret = true; 
+		}
+		return ret;
+	}
+	
 	public int getMaxFloor() {
 		return maxFloor;
 	}

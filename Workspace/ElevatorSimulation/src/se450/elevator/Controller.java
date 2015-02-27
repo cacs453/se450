@@ -176,7 +176,6 @@ public class Controller extends Thread {
 	 * Pre-process the pending list before dispatching the pending requests to the idle elevators. 
 	 */
 	public void preprocess_pending_list() {
-		//System.out.println("Preprocess pending list.");
 		boolean pendingListIsEmpty = false;
 		synchronized(this.pendingList) {
 			if (this.pendingList.size() ==0) {
@@ -218,9 +217,7 @@ public class Controller extends Thread {
 						}
 					}
 				}
-			}			
-		
-		//System.out.println("Preprocess pending list completed.");
+			}					
 	}
 		
 	/**
@@ -310,24 +307,30 @@ public class Controller extends Thread {
 						this.status_string = status_string;
 					}
 					
-					//Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at there destination floors.
-					if (this.isPGFinished) {
-						if (total == arrivedCount) {
-							onAllTasksFinished();
-						}
-					}
-					
 					// Elevator thread will be blocked if invoke wait(), so check time-out status here for elevators.
 					ArrayList<Elevator> elevatorList = Building.getBuilding().getElevatorList();
-					//synchronized(elevatorList) 
+					boolean allElevatorsFinishedTasks = true;
+					synchronized(elevatorList) 
 					{
-						for (Elevator ele : elevatorList) {
-							if ( ((ElevatorImpl)ele).isTimeOut()) 
-							{
+						for (Elevator ele : elevatorList) {							
+							if ( ((ElevatorImpl)ele).isTimeOut()) {
 								((ElevatorImpl)ele).notifyForTimeOut();
+							}
+							
+							if (!((ElevatorImpl)ele).hasFinishedAllTasks()) {
+								allElevatorsFinishedTasks = false;
 							}
 						}
 					}					
+					
+					if (this.isPGFinished) {
+						if (total != 0 && total == arrivedCount && allElevatorsFinishedTasks) {
+							//Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at their destination floors.						
+							onAllTasksFinished();
+							this.halt();
+						}
+					}
+
 				}
 				
 				Thread.sleep(threadInterval);
@@ -397,13 +400,14 @@ public class Controller extends Thread {
 	}	
 
 	/**
-	 * Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at there destination floors.
+	 * Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at their destination floors.
 	 */
 	public void onAllTasksFinished() {
+		//System.out.println("onAllTasksFinished");
 	}
 
 	/**
-	 * Be notified when personGenerator stops.
+	 * Be notified when personGenerator completes.
 	 */
 	public void onPGFinished() {
 		this.isPGFinished = true;
