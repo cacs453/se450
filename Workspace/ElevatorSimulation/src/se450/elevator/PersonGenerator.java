@@ -27,6 +27,7 @@ public class PersonGenerator implements Runnable {
 	private int bulkBlock = 0;
 	private int bulkCount = 0;
 	private HashMap<Integer, ArrayList<Person>> map = new HashMap<Integer, ArrayList<Person>>();
+	private String personInfo;
 	
 	/**
 	 * Constructor of PersonGenerator
@@ -38,7 +39,7 @@ public class PersonGenerator implements Runnable {
 			long simulationduration) {
 		this.floornumbers = floornumbers;
 		this.randompersonnumbers = randompersonnumbers;
-		this.simulationduration = simulationduration;
+		this.simulationduration = simulationduration * 1000;
 		if (randompersonnumbers<100)
 			this.bulkBlock = 0;
 		else
@@ -92,7 +93,7 @@ public class PersonGenerator implements Runnable {
 		// Start up and await first request
 		while (running) {
 			try {
-				PersonImpl person=null;
+				Person person=null;
 				synchronized (personList) { // Wait for something to happen
 											// (request added or removed)
 					if (personList.size() >= randompersonnumbers) {
@@ -108,17 +109,19 @@ public class PersonGenerator implements Runnable {
 							toFloor = randomWithRange(1, floornumbers);
 						} while (fromFloor == toFloor);
 
-						person = new PersonImpl(personCount++,
-								fromFloor, toFloor,
-								(System.currentTimeMillis() - startTime));	
+						person = PersonFactory.CreatePerson(fromFloor, toFloor, (System.currentTimeMillis() - startTime));
+						if (fromFloor<toFloor)
+							personInfo = "Person %d created on Floor %s, wants to go UP to Floor %s";
+						else
+							personInfo = "Person %d created on Floor %s, wants to go DOWN to Floor %s";
+						
 						Toolset.println(
 								"info",
 								String.format(
-										"PersonGenerator -> New Person [%d] is generated in floor [%s] with destination floor [%s]. (%s)",
+										personInfo,
 										person.getPersonId(),
 										person.getFromFloor(),
-										person.getToFloor(),
-										Request.createWithPerson(person).toInfoString()
+										person.getToFloor()
 										));
 						
 						personList.add(person);												
@@ -146,6 +149,7 @@ public class PersonGenerator implements Runnable {
 		{
 			Toolset.println("info", ex.getStackTrace().toString());
 		}*/
+		Controller.getInstance().onPGFinished();
 		Toolset.println("info", "PersonGenerator -> Finished");
 	}
 
@@ -218,7 +222,7 @@ public class PersonGenerator implements Runnable {
 	 * Cache the person list, and insert later by bulk. This is to avoid the lock.
 	 * @param person instance
 	 */
-	private void addPersonToFloor(PersonImpl person) {
+	private void addPersonToFloor(Person person) {
 		//bulkPersonList.add(person);
 		if (!map.containsKey(person.getFromFloor())) {
 			ArrayList<Person> persons = new ArrayList<Person>();

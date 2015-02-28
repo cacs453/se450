@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import se450.elevator.common.DIRECTION;
 import se450.elevator.common.PERSON_STATUS;
+import se450.elevator.common.Toolset;
 
 /**
  * The implementation for the floor interface. 
@@ -66,9 +67,21 @@ public class FloorImpl implements Floor {
 		synchronized (personList) {
 			for(int i = 0; i < removePersonList.size(); i++) {
 				for(int j = 0; j < personList.size(); j++) {
-					if (removePersonList.get(i).getPersonId() == removePersonList.get(j).getPersonId())
+					if (removePersonList.get(i).getPersonId() == removePersonList.get(j).getPersonId()) {
+						int personId = removePersonList.get(i).getPersonId();
 						personList.remove(j);
+						Toolset.println("info",	String.format("Person %d has left Floor %s [Floor People: %s]", personId, this.getFloorId(), getPersonListInfo(this.personList)));
+					}
 				}
+			}
+		}
+	}
+	
+	public void addTravelledPerson (ArrayList<Person> travelledPersonList) {
+		synchronized (personList) {
+			this.personList.addAll(travelledPersonList);
+			for(Person p: travelledPersonList) {
+				Toolset.println("info",	String.format("Person %s entered Floor %d [People: %s]", p.getPersonId(), this.getFloorId(), getPersonListInfo(travelledPersonList)));
 			}
 		}
 	}
@@ -106,7 +119,14 @@ public class FloorImpl implements Floor {
 	 */
 	public void setCallBox(Person person) {
 		person.startWaiting();
-		callbox.pressButton(getDirection(person));
+		DIRECTION direction = getDirection(person);
+		callbox.pressButton(direction);
+		String requestInfo;
+		if (direction == DIRECTION.DOWN)
+			requestInfo = "Person %d presses DOWN button on Floor %s";
+		else
+			requestInfo = "Person %d presses UP button on Floor %s";
+		Toolset.println("info",	String.format(requestInfo, person.getPersonId(), this.getFloorId()));
 	}	
 	
 	/**
@@ -119,9 +139,10 @@ public class FloorImpl implements Floor {
 		
 		for(int i=0; i<persons.size(); i++) {
 			//callbox.pressButton(getDirection((PersonImpl)persons.get(i)));
-			PersonImpl person = (PersonImpl)persons.get(i);
+			Person person = persons.get(i);
 			person.startWaiting();
-			if (getDirection(person) == DIRECTION.UP) {
+			DIRECTION direction = getDirection(person);
+			if (direction == DIRECTION.UP) {
 				if(!upPressed) {
 					callbox.pressButton(DIRECTION.UP);
 					upPressed = true;
@@ -133,6 +154,13 @@ public class FloorImpl implements Floor {
 					downPressed = true;
 				}
 			}
+			
+			String requestInfo;
+			if (direction == DIRECTION.DOWN)
+				requestInfo = "Person %d presses DOWN button on Floor %s";
+			else
+				requestInfo = "Person %d presses UP button on Floor %s";
+			Toolset.println("info",	String.format(requestInfo, person.getPersonId(), this.getFloorId()));
 		}
 	}
 	
@@ -148,5 +176,18 @@ public class FloorImpl implements Floor {
 			return DIRECTION.DOWN;
 		else
 			return DIRECTION.NONE;
+	}
+	
+	/**
+	 * Get the printing person list information
+	 * @return
+	 */
+	private String getPersonListInfo(ArrayList<Person> persons) {
+		StringBuilder sb = new StringBuilder();
+		for(Person p: persons) {			
+			sb.append(p.getPersonId());
+			sb.append(",");			
+		}
+		return sb.toString();
 	}
 }

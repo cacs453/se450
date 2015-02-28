@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <elevatorsystem>
 	<building>
-		<floornumbers>16</floornumbers>
-		<elevatornumbers>4</elevatornumbers>
-		<randompersonnumbers>10</randompersonnumbers>
-		<simulationduration>62000</simulationduration>
+		<floornumbers>21</floornumbers>
+		<elevatornumbers>3</elevatornumbers>
+		<randompersonnumbers>15</randompersonnumbers>
+		<simulationduration>300</simulationduration>
 	</building>
 	<elevators>
 		<elevator>
 			<id>1</id>
-			<maxpassengers>12</maxpassengers>
+			<maxpassengers>8</maxpassengers>
 			<timeperfloor>500</timeperfloor>
 			<timeperdoor>500</timeperdoor>
 			<defaultfloor>1</defaultfloor>
@@ -17,28 +17,20 @@
 		</elevator>
 		<elevator>
 			<id>2</id>
-			<maxpassengers>12</maxpassengers>
+			<maxpassengers>8</maxpassengers>
 			<timeperfloor>500</timeperfloor>
 			<timeperdoor>500</timeperdoor>
 			<defaultfloor>1</defaultfloor>
 			<timeout>15000</timeout>
-		</elevator>
+		</elevator>	
 		<elevator>
 			<id>3</id>
-			<maxpassengers>12</maxpassengers>
+			<maxpassengers>8</maxpassengers>
 			<timeperfloor>500</timeperfloor>
 			<timeperdoor>500</timeperdoor>
 			<defaultfloor>1</defaultfloor>
 			<timeout>15000</timeout>
-		</elevator>
-		<elevator>
-			<id>4</id>
-			<maxpassengers>12</maxpassengers>
-			<timeperfloor>500</timeperfloor>
-			<timeperdoor>500</timeperdoor>
-			<defaultfloor>1</defaultfloor>
-			<timeout>15000</timeout>
-		</elevator>
+		</elevator>	
 	</elevators>
 	<persons>
 		<person>
