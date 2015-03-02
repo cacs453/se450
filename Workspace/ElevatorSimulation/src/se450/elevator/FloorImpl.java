@@ -71,6 +71,7 @@ public class FloorImpl implements Floor {
 						int personId = removePersonList.get(i).getPersonId();
 						personList.remove(j);
 						Toolset.println("info",	String.format("Person %d has left Floor %s [Floor People: %s]", personId, this.getFloorId(), getPersonListInfo(this.personList)));
+						break;
 					}
 				}
 			}
@@ -81,7 +82,7 @@ public class FloorImpl implements Floor {
 		synchronized (personList) {
 			this.personList.addAll(travelledPersonList);
 			for(Person p: travelledPersonList) {
-				Toolset.println("info",	String.format("Person %s entered Floor %d [People: %s]", p.getPersonId(), this.getFloorId(), getPersonListInfo(travelledPersonList)));
+				Toolset.println("info",	String.format("Person %d entered Floor %d [People: %s]", p.getPersonId(), this.getFloorId(), getPersonListInfo(travelledPersonList)));
 			}
 		}
 	}
