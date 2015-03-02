@@ -17,11 +17,11 @@ public class Controller extends Thread {
 	private static Controller instance = null;
 	private ArrayList<Request> pendingList = new ArrayList<Request>(); 
 	private boolean halt = false;
-	private long threadInterval = 1000; //100
+	private long threadInterval = 1000;
 	String status_string = "";
 	private static double  maxWaitingtimeLimit = -1;
 	private boolean isPGFinished = false;
-	private ElevatorSystem delegate = null; // Delegate to be notified that all tasks fulfilled.
+	public static Object elevator_system_waiting_lock = null; //Lock object to notify ElevatorSystem that all tasks have been fulfilled.
 	
 	/**
 	 * Get the singleton instance of ElevatorController.
@@ -241,7 +241,7 @@ public class Controller extends Thread {
 	 */
 	public void run() {
 		while(!this.halt)
-		{			
+		{						
 			try {							
 				if (maxWaitingtimeLimit==-1) 
 				{
@@ -403,17 +403,19 @@ public class Controller extends Thread {
 	/**
 	 * Set delegate which will be notified when all tasks are fulfilled.
 	 */
-	public void setDelegate(ElevatorSystem delegate) {
-		this.delegate = delegate;
+	public void setMainThreadLock(Object lock) {
+		elevator_system_waiting_lock = lock;
 	}
 	
 	/**
 	 * Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at their destination floors.
 	 */
 	public void onAllTasksFinished() {
-		if (delegate != null) {
-			
-		}
+		if (elevator_system_waiting_lock != null) {
+			synchronized(elevator_system_waiting_lock) {
+				elevator_system_waiting_lock.notify();
+			}
+		}		
 	}
 
 	/**
