@@ -94,6 +94,9 @@ public class ElevatorSystem {
 				ele.halt();
 	        }
 			*/
+			
+			Thread.sleep(360*1000);
+			Toolset.printReport(building.getFloorNumbers(), building.getElevatorNumbers(), building.getPersonList());
 			Toolset.println("info", "Main thread exists.");
 		}
 		catch (Exception e) {
