@@ -21,7 +21,8 @@ public class Controller extends Thread {
 	String status_string = "";
 	private static double  maxWaitingtimeLimit = -1;
 	private boolean isPGFinished = false;
-
+	private ElevatorSystem delegate = null; // Delegate to be notified that all tasks fulfilled.
+	
 	/**
 	 * Get the singleton instance of ElevatorController.
 	 * 
@@ -303,7 +304,7 @@ public class Controller extends Thread {
 					
 					if (status_string.compareTo(this.status_string) !=0 ) 
 					{
-						Toolset.println("info", status_string);
+						//Toolset.println("info", status_string);
 						this.status_string = status_string;
 					}
 					
@@ -373,7 +374,7 @@ public class Controller extends Thread {
 	 * Print the amount of the pending list.
 	 */
 	public void printPendingList() {
-		Toolset.println("info", "ElevatorController -> PendingList amount: "+pendingList.size());
+		//Toolset.println("info", "ElevatorController -> PendingList amount: "+pendingList.size());
 	}
 	
 	public ArrayList<Request> getPendingList() {
@@ -400,10 +401,19 @@ public class Controller extends Thread {
 	}	
 
 	/**
+	 * Set delegate which will be notified when all tasks are fulfilled.
+	 */
+	public void setDelegate(ElevatorSystem delegate) {
+		this.delegate = delegate;
+	}
+	
+	/**
 	 * Notify elevatorSystem to stop all threads and output logs, when person generator stops and all person arrived at their destination floors.
 	 */
 	public void onAllTasksFinished() {
-		//System.out.println("onAllTasksFinished");
+		if (delegate != null) {
+			
+		}
 	}
 
 	/**

@@ -37,7 +37,8 @@ public class Request {
 	}
 	
 	public String toInfoString() {
-		String str = String.format("%d%s", this.floor, this.direction==DIRECTION.UP ? "^" : "v");
+		//String str = String.format("%d%s", this.floor, this.direction==DIRECTION.UP ? "^" : "v");
+		String str = String.format("%d", this.floor);
 		return str;
 	}
 }
