@@ -96,9 +96,10 @@ public class PersonGenerator implements Runnable {
 				Person person=null;
 				synchronized (personList) { // Wait for something to happen
 											// (request added or removed)
-					if (personList.size() >= randompersonnumbers) {
+					if (personList.size() >= (this.randompersonnumbers * (int)(simulationduration/1000/60))) {
 						sendPersonToFloor(); // Force to call
 						running = false; // Stop running after creating enough
+						//Toolset.println("info","enough person created:"+(simulationduration/1000/60));
 					}
 					else {
 						int fromFloor = 0;
@@ -138,8 +139,10 @@ public class PersonGenerator implements Runnable {
 				continue;
 			}
 
-			if ((System.currentTimeMillis() - startTime) > simulationduration)
+			if ((System.currentTimeMillis() - startTime) > simulationduration){
+				//Toolset.println("info","Time expired:"+this.simulationduration);
 				break;
+			}
 		}
 		/*try {
 			Thread.sleep(1000*120);
