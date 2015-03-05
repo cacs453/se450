@@ -101,7 +101,13 @@ public class Toolset {
 		else
 			System.out.println(deltaTime + " " + message);
 	}
-
+/**
+ * Print the statistic report
+ * 
+ * @param floorNumbers Floor numbers in int.
+ * @param elevatorNumbers Elevator numbers in int.
+ * @param personList ArrayList of Person.
+ */
 public static void printReport(int floorNumbers, int elevatorNumbers, ArrayList<Person> personList) {
 		
 		System.out.println("\nSimulation statistics:");
@@ -142,7 +148,7 @@ public static void printReport(int floorNumbers, int elevatorNumbers, ArrayList<
 				msg += (int)Math.rint((double)amm_floor[i][3]/1000)+"s\t";
 			}
 			else {
-				msg += "N/A\tN/A\tN/A";
+				msg += "/\t/\t/";
 			}
 			System.out.println(msg);
 		}
@@ -179,7 +185,7 @@ public static void printReport(int floorNumbers, int elevatorNumbers, ArrayList<
 					System.out.print(timer.total_time/timer.persons/1000+"s\t");
 				}
 				else {
-					System.out.print("N/A\t");
+					System.out.print("/\t");
 				}
 			}
 			System.out.println();
@@ -198,7 +204,7 @@ public static void printReport(int floorNumbers, int elevatorNumbers, ArrayList<
 					System.out.print(timer.max_time/1000+"s\t");
 				}
 				else {
-					System.out.print("N/A\t");
+					System.out.print("/\t");
 				}
 			}
 			System.out.println();
@@ -217,7 +223,7 @@ public static void printReport(int floorNumbers, int elevatorNumbers, ArrayList<
 					System.out.print(timer.min_time/1000+"s\t");
 				}
 				else {
-					System.out.print("N/A\t");
+					System.out.print("/\t");
 				}
 			}
 			System.out.println();

@@ -68,58 +68,6 @@ public class ElevatorSystem {
 			//Received the notification that all tasks have been fulfilled. 
 			onAllTasksFulfilled();
 			
-			/*
-			//create the floor requests from person list
-			ArrayList<Person> personList = building.getPersonList();			
-			for (int i = 0; i < personList.size(); i++) {
-				PersonImpl person = (PersonImpl) personList.get(i);
-				
-				Thread.sleep(person.getTriggerTime() - lastTriggerTime);
-				lastTriggerTime = person.getTriggerTime();
-				
-				ElevatorImpl ele;
-				switch(person.getPersonId())
-				{
-					case 1:
-						ele = mapElevator.get("1");
-						ele.addFloorRequest(person.getFromFloor(), DIRECTION.UP);
-						break;
-					case 2:
-					case 3:
-					case 4:
-						ele = mapElevator.get("2");
-						ele.addFloorRequest(person.getFromFloor(), DIRECTION.UP);
-						break;
-					case 5:
-						ele = mapElevator.get("3");
-						ele.addFloorRequest(person.getFromFloor(), DIRECTION.UP);
-						break;						
-				}												
-	        }*/
-			
-			//create the rider requests from the panel list
-			/*ArrayList<PanelRequest> panelRequestList = building.getPanelRequestList();
-			for (int i = 0; i < panelRequestList.size(); i++) {
-				PanelRequest panel = panelRequestList.get(i);
-				
-				Thread.sleep(panel.getTriggerTime() - lastTriggerTime);
-				lastTriggerTime = panel.getTriggerTime();	
-				
-				ElevatorImpl ele = mapElevator.get(Integer.toString(panel.getElevatorId()));
-				ele.addRiderRequest(panel.getFloorId());				
-	        }			
-			
-			//wait for all done
-			Thread.sleep(15000*2);
-			
-			//shut down all the elevators
-			for (int i = 0; i < elevatorList.size(); i++) {
-				ElevatorImpl ele = (ElevatorImpl) elevatorList.get(i);
-				ele.halt();
-	        }
-			*/
-			
-			Thread.sleep(360*1000);
 			Toolset.printReport(building.getFloorNumbers(), building.getElevatorNumbers(), building.getPersonList());
 			Toolset.println("info", "Main thread exists.");
 		}
