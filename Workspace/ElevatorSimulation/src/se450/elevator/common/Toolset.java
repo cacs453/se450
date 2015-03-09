@@ -235,7 +235,7 @@ public static void printReport(int floorNumbers, int elevatorNumbers, ArrayList<
 		System.out.println("Person\tStart_Floor\tDest_Floor\tWait_Time\tRide_Time\tTotal_Time");
 		for (int i=0; i<personList.size(); i++) {
 			Person ps = personList.get(i);
-			System.out.println("P"+(i+1)+"\t"+ps.getFromFloor()+"\t\t"+ps.getToFloor()+"\t\t"+ps.getWaitTime()/1000+"s\t\t"+ps.getRideTime()/1000+"s\t\t"+(ps.getWaitTime()+ps.getRideTime())/1000+"s");
+			System.out.println("P"+ps.getPersonId()+"\t"+ps.getFromFloor()+"\t\t"+ps.getToFloor()+"\t\t"+ps.getWaitTime()/1000+"s\t\t"+ps.getRideTime()/1000+"s\t\t"+(ps.getWaitTime()+ps.getRideTime())/1000+"s");
 		}
 	}
 
