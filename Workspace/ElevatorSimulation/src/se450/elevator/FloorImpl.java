@@ -70,7 +70,7 @@ public class FloorImpl implements Floor {
 					if (removePersonList.get(i).getPersonId() == removePersonList.get(j).getPersonId()) {
 						int personId = removePersonList.get(i).getPersonId();
 						personList.remove(j);
-						Toolset.println("info",	String.format("Person %d has left Floor %s [Floor People: %s]", personId, this.getFloorId(), getPersonListInfo(this.personList)));
+						Toolset.println("info",	String.format("Person P%d has left Floor %s [Floor People: %s]", personId, this.getFloorId(), getPersonListInfo(this.personList)));
 						break;
 					}
 				}
@@ -82,7 +82,7 @@ public class FloorImpl implements Floor {
 		synchronized (personList) {
 			this.personList.addAll(travelledPersonList);
 			for(Person p: travelledPersonList) {
-				Toolset.println("info",	String.format("Person %d entered Floor %d [People: %s]", p.getPersonId(), this.getFloorId(), getPersonListInfo(travelledPersonList)));
+				Toolset.println("info",	String.format("Person P%d entered Floor %d [People: %s]", p.getPersonId(), this.getFloorId(), getPersonListInfo(travelledPersonList)));
 			}
 		}
 	}
@@ -124,9 +124,9 @@ public class FloorImpl implements Floor {
 		callbox.pressButton(direction);
 		String requestInfo;
 		if (direction == DIRECTION.DOWN)
-			requestInfo = "Person %d presses DOWN button on Floor %s";
+			requestInfo = "Person P%d presses DOWN button on Floor %s";
 		else
-			requestInfo = "Person %d presses UP button on Floor %s";
+			requestInfo = "Person P%d presses UP button on Floor %s";
 		Toolset.println("info",	String.format(requestInfo, person.getPersonId(), this.getFloorId()));
 	}	
 	
@@ -158,9 +158,9 @@ public class FloorImpl implements Floor {
 			
 			String requestInfo;
 			if (direction == DIRECTION.DOWN)
-				requestInfo = "Person %d presses DOWN button on Floor %s";
+				requestInfo = "Person P%d presses DOWN button on Floor %s";
 			else
-				requestInfo = "Person %d presses UP button on Floor %s";
+				requestInfo = "Person P%d presses UP button on Floor %s";
 			Toolset.println("info",	String.format(requestInfo, person.getPersonId(), this.getFloorId()));
 		}
 	}

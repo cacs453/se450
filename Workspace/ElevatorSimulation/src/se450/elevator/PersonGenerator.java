@@ -112,9 +112,9 @@ public class PersonGenerator implements Runnable {
 
 						person = PersonFactory.CreatePerson(fromFloor, toFloor, (System.currentTimeMillis() - startTime));
 						if (fromFloor<toFloor)
-							personInfo = "Person %d created on Floor %s, wants to go UP to Floor %s";
+							personInfo = "Person P%d created on Floor %s, wants to go UP to Floor %s";
 						else
-							personInfo = "Person %d created on Floor %s, wants to go DOWN to Floor %s";
+							personInfo = "Person P%d created on Floor %s, wants to go DOWN to Floor %s";
 						
 						Toolset.println(
 								"info",

@@ -8,7 +8,7 @@ package se450.elevator;
  */
 public class PersonFactory {
 	private final static int DEFAULT_PERSON_TYPE = 0;
-	private static int personID = 0;
+	private static int personID = 1;
 	
 	public PersonFactory() {
 	}	
